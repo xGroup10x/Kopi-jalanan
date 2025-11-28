@@ -1,9 +1,9 @@
 // Global State
 let cart = [];
 let products = [
-    { id: 'kopi-o', name: 'Kopi-O Special', price: 3.50, desc: 'Our signature strong black coffee.', imgUrl: 'https://images.unsplash.com/photo-1517568550268-bf0873a4b6c3?q=80' },
-    { id: 'kopi-susu', name: 'Kopi Susu Kaw', price: 5.00, desc: 'Creamy, sweet, and strong.', imgUrl: 'https://images.unsplash.com/photo-1541167760496-159c3a3d5e2e?q=80' },
-    { id: 'matcha', name: 'Iced Matcha Latte', price: 7.00, desc: 'Fresh iced matcha latte.', imgUrl: 'https://images.unsplash.com/photo-1565574768393-27e1f7481b49?q=80' },
+    { id: 'kopi-o', name: 'Kopi-O Special', price: 3.50, desc: 'Our signature strong black coffee.', imgUrl: 'blob:https://github.com/c621ff48-8813-4fd3-a8fe-6d13c818e2a2' },
+    { id: 'kopi-susu', name: 'Kopi Susu Kaw', price: 5.00, desc: 'Creamy, sweet, and strong.', imgUrl: 'blob:https://github.com/2ce3b16d-075d-4d40-8100-4bb93a91fefc' },
+    { id: 'matcha', name: 'Iced Matcha Latte', price: 7.00, desc: 'Fresh iced matcha latte.', imgUrl: 'blob:https://github.com/19155bef-da40-4b79-b2d1-536d9a84b9d8' },
     { id: 'americano', name: 'Iced Americano', price: 4.50, desc: 'Strong Americano.', imgUrl: 'blob:https://github.com/4107cb39-6369-4fcc-9849-f333849497d2' },
 ];
 
@@ -172,4 +172,5 @@ window.submitCheckout = function(e) {
     updateCartUI();
     showPage('homePage');
 };
+
 

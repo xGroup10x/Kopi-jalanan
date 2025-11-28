@@ -1,0 +1,32 @@
+body {
+    background-color: #1a1a1a;
+    color: #e5e5e5;
+}
+
+.font-oswald {
+    font-family: 'Oswald', sans-serif;
+}
+
+.text-street-yellow {
+    color: #FFAE00;
+}
+
+.bg-street-yellow {
+    background-color: #FFAE00;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #FFAE00;
+}

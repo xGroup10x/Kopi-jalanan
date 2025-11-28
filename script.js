@@ -1,26 +1,47 @@
-// Global State
-let cart = [];
-let products = [
-    { id: 'kopi-o', name: 'Kopi-O Special', price: 3.50, desc: 'Our signature strong black coffee.', imgUrl:'https://raw.githubusercontent.com/xGroup10x/Kopi-jalanan/refs/heads/main/main/kopiO.jpg'},
-    { id: 'kopi-susu', name: 'Kopi Susu Kaw', price: 5.00, desc: 'Creamy, sweet, and strong.', imgUrl:'https://raw.githubusercontent.com/xGroup10x/Kopi-jalanan/main/main/kopi_susu.jpg'},
-    { id: 'matcha', name: 'Iced Matcha Latte', price: 7.00, desc: 'Fresh iced matcha latte.', imgUrl:'https://raw.githubusercontent.com/xGroup10x/Kopi-jalanan/refs/heads/main/main/icedMatchaLatte.jpg'},
-    { id: 'americano', name: 'Iced Americano', price: 4.50, desc: 'Strong Americano.', imgUrl:'https://github.com/xGroup10x/Kopi-jalanan/raw/main/main/iced_americano.jpg'},
-];
+// --- 1. FIREBASE IMPORTS ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// When page loads
+// --- 2. YOUR CONFIG ---
+const firebaseConfig = {
+  apiKey: "AIzaSyD4gnX77Hvu49WFwYl4HtJJOPk0SwRsj8s",
+  authDomain: "kopi-jalanan.firebaseapp.com",
+  projectId: "kopi-jalanan",
+  storageBucket: "kopi-jalanan.firebasestorage.app",
+  messagingSenderId: "793785054964",
+  appId: "1:793785054964:web:acc8be94e1cdd38721d0a1"
+};
+
+// Initialize connection
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// --- 3. GLOBAL STATE ---
+let cart = [];
+let products = []; // Starts empty, will load from database
+
+// --- 4. LISTEN TO DATABASE (REAL-TIME) ---
 document.addEventListener("DOMContentLoaded", () => {
-    renderMenu();
-    renderAdminTable();
+    // This function runs automatically whenever the database changes
+    const productsRef = collection(db, "products");
+    
+    onSnapshot(productsRef, (snapshot) => {
+        products = []; // Clear current list
+        snapshot.forEach((doc) => {
+            products.push(doc.data()); // Add items from database
+        });
+        
+        // Update the screen
+        renderMenu();
+        renderAdminTable();
+        console.log("Menu updated from Database!");
+    });
 });
 
-// Refresh UI
-function refreshProductLists() {
-    renderMenu();
-    renderAdminTable();
-}
+// --- 5. FUNCTIONS ---
 
-// Add Product
-window.addProduct = function(event) {
+// Add Product (Saves to Database)
+window.addProduct = async function(event) {
     event.preventDefault();
 
     const name = document.getElementById('prodName').value;
@@ -28,36 +49,51 @@ window.addProduct = function(event) {
     const desc = document.getElementById('prodDesc').value;
     const imgUrl = document.getElementById('prodImg').value || 'https://placehold.co/400x300/2c2c2c/FFAE00';
 
+    // Create a clean ID (e.g., "Kopi O" -> "kopi-o")
     const newId = name.toLowerCase().replace(/ /g, '-');
 
-    products.push({
+    const newProduct = {
         id: newId,
         name,
         price,
         desc,
         imgUrl,
         createdAt: new Date().toISOString()
-    });
+    };
 
-    alert('Product Added!');
-    document.getElementById('adminForm').reset();
-    refreshProductLists();
+    try {
+        // Send to Firebase
+        await setDoc(doc(db, "products", newId), newProduct);
+        
+        alert('Product Saved to Database!');
+        document.getElementById('adminForm').reset();
+    } catch (error) {
+        console.error("Error saving:", error);
+        alert("Failed to save. Check console (F12) for details.");
+    }
 };
 
-// Delete Product
-window.deleteProduct = function(id) {
-    if (!confirm("Delete this item?")) return;
-    products = products.filter(prod => prod.id !== id);
-    refreshProductLists();
+// Delete Product (Removes from Database)
+window.deleteProduct = async function(id) {
+    if (!confirm("Delete this item permanently?")) return;
+
+    try {
+        await deleteDoc(doc(db, "products", id));
+        // The screen will update automatically via onSnapshot
+    } catch (error) {
+        console.error("Error deleting:", error);
+        alert("Failed to delete.");
+    }
 };
 
-// Render Menu
+// --- EXISTING UI LOGIC (UNCHANGED) ---
+
 function renderMenu() {
     const grid = document.getElementById('menuGrid');
     grid.innerHTML = '';
 
     if (products.length === 0) {
-        grid.innerHTML = '<p class="text-center text-gray-400 col-span-full">No items yet.</p>';
+        grid.innerHTML = '<p class="text-center text-gray-400 col-span-full">Loading menu...</p>';
         return;
     }
 
@@ -81,7 +117,6 @@ function renderMenu() {
     });
 }
 
-// Render Admin Table
 function renderAdminTable() {
     const tbody = document.getElementById('adminTableBody');
     tbody.innerHTML = '';
@@ -115,7 +150,7 @@ window.viewDetail = function(id) {
     showPage('detailPage');
 };
 
-// Cart Logic
+// Cart Logic (Local only, does not save to DB)
 window.addToCart = function(id) {
     const prod = products.find(p => p.id === id);
     cart.push(prod);
@@ -173,19 +208,7 @@ window.submitCheckout = function(e) {
     showPage('homePage');
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// EXPORT FUNCTIONS (Required for type="module")
+window.renderMenu = renderMenu;
+window.renderAdminTable = renderAdminTable;
+window.updateCartUI = updateCartUI;

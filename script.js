@@ -1,7 +1,7 @@
 // Global State
 let cart = [];
 let products = [
-    { id: 'kopi-o', name: 'Kopi-O Special', price: 3.50, desc: 'Our signature strong black coffee.', imgUrl:'https://raw.githubusercontent.com/xGroup10x/Kopi-jalanan/refs/heads/main/kopiO.jpg'},
+    { id: 'kopi-o', name: 'Kopi-O Special', price: 3.50, desc: 'Our signature strong black coffee.', imgUrl:'https://github.com/xGroup10x/Kopi-jalanan/blob/main/images/iced_americano.jpg?raw=true'},
     { id: 'kopi-susu', name: 'Kopi Susu Kaw', price: 5.00, desc: 'Creamy, sweet, and strong.', imgUrl:'https://github.com/2ce3b16d-075d-4d40-8100-4bb93a91fefc'},
     { id: 'matcha', name: 'Iced Matcha Latte', price: 7.00, desc: 'Fresh iced matcha latte.', imgUrl:'images/icedMatchaLatte.jpg'},
     { id: 'americano', name: 'Iced Americano', price: 4.50, desc: 'Strong Americano.', imgUrl:'https://github.com/4107cb39-6369-4fcc-9849-f333849497d2'},
@@ -172,6 +172,7 @@ window.submitCheckout = function(e) {
     updateCartUI();
     showPage('homePage');
 };
+
 
 
 

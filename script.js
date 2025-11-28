@@ -212,3 +212,4 @@ window.submitCheckout = function(e) {
 window.renderMenu = renderMenu;
 window.renderAdminTable = renderAdminTable;
 window.updateCartUI = updateCartUI;
+

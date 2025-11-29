@@ -125,13 +125,13 @@
             <button onclick="showPage('menuPage')" class="mb-6 text-gray-400 hover:text-white flex items-center gap-2">
                 <i class="fas fa-arrow-left"></i> Back to Menu
             </button>
-        
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
                 
                 <div class="h-[500px] bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden p-8 flex items-center justify-center">
                     <img id="detailImage" src="" class="w-full h-full object-contain drop-shadow-2xl">
                 </div>
-        
+
                 <div class="flex flex-col">
                     <div class="mb-8">
                         <h2 id="detailName" class="text-4xl font-oswald font-bold uppercase mb-2 text-white">Product Name</h2>
@@ -141,14 +141,14 @@
                     
                     <div id="detailOptions" class="space-y-8 mb-8">
                         </div>
-        
+
                     <button id="detailAddBtn" class="w-full bg-street-yellow text-black font-bold text-lg uppercase tracking-widest hover:bg-white transition py-4 rounded-xl shadow-lg shadow-yellow-900/20">
-                        Add to Order
+                        Add to Billing
                     </button>
                 </div>
             </div>
         </section>
-        
+
         <section id="cartPage" class="page-section hidden px-6 py-12 max-w-3xl mx-auto">
             <h2 class="text-3xl font-oswald font-bold uppercase mb-8">Your Cart</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -194,6 +194,11 @@
                         </div>
                         
                         <div>
+                            <label class="block text-xs text-gray-500 mb-1">Stock Quantity</label>
+                            <input type="number" id="prodStock" required class="w-full bg-black border border-zinc-700 p-2 text-white focus:border-street-yellow outline-none">
+                        </div>
+
+                        <div>
                             <label class="block text-xs text-gray-500 mb-1">Category</label>
                             <select id="prodCat" class="w-full bg-black border border-zinc-700 p-2 text-white">
                                 <option value="coffee">Coffee</option>
@@ -221,7 +226,7 @@
                         <thead class="text-xs text-gray-500 uppercase bg-black">
                             <tr>
                                 <th class="p-3">Name</th>
-                                <th class="p-3">Price</th>
+                                <th class="p-3">Stock</th>
                                 <th class="p-3 text-right">Action</th>
                             </tr>
                         </thead>

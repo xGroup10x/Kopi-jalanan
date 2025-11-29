@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     onSnapshot(productsRef, (snapshot) => {
         products = [];
         snapshot.forEach((doc) => {
+            // Combine data with ID safely
             products.push({ ...doc.data(), id: doc.id });
         });
         renderMenu();
@@ -58,6 +59,7 @@ function updateNavUI(user) {
         authBtn.innerText = "Logout";
         authBtn.classList.replace('bg-zinc-800', 'bg-red-600');
         
+        // Show Admin button ONLY if email matches
         if (user.email === ADMIN_EMAIL) {
             adminBtn.classList.remove('hidden');
         } else {
@@ -132,27 +134,29 @@ function renderMenu() {
         // 2. VISUALS: Green for Available, Red for Sold Out
         const badgeColor = isSoldOut ? "bg-red-600" : "bg-green-600";
         const badgeText = isSoldOut ? "Out of Stock" : `${prod.stock} left`;
+        
+        // 3. STYLE: Gray out image if empty
+        const imgOpacity = isSoldOut ? "opacity-40 grayscale" : "";
 
-        // 3. BUTTONS: Disable if sold out
+        // 4. BUTTONS: Disable if sold out
         const btnText = isSoldOut ? "SOLD OUT" : "Customize";
         const btnClass = isSoldOut 
             ? "bg-zinc-700 text-gray-500 cursor-not-allowed" 
             : "bg-white text-black hover:bg-street-yellow cursor-pointer";
         const clickAction = isSoldOut ? "" : `onclick="viewDetail('${prod.id}')"`;
-        const imgOpacity = isSoldOut ? "opacity-50 grayscale" : "";
 
         grid.innerHTML += `
             <div class="bg-zinc-800 border border-zinc-700 p-4 transition hover:border-street-yellow group relative">
                 
-                <div class="h-48 overflow-hidden mb-4 relative">
+                <div class="absolute top-2 left-2 ${badgeColor} text-white text-xs font-bold px-2 py-1 rounded z-20 shadow-md pointer-events-none">
+                    ${badgeText}
+                </div>
+
+                <div class="h-48 overflow-hidden mb-4 relative z-0">
                     <img src="${prod.imgUrl}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 ${imgOpacity}">
                     
                     <div class="absolute top-2 right-2 bg-street-yellow text-black font-bold px-2 py-1 text-sm z-10">
                         RM ${prod.price.toFixed(2)}
-                    </div>
-
-                    <div class="absolute top-2 left-2 ${badgeColor} text-white text-xs font-bold px-2 py-1 rounded z-10 shadow-md">
-                        ${badgeText}
                     </div>
                 </div>
 
@@ -181,6 +185,7 @@ function viewDetail(id) {
     container.innerHTML = '';
 
     if (prod.category === 'coffee') {
+        // COFFEE OPTIONS
         container.innerHTML = `
             <div>
                 <label class="block text-white font-bold mb-3">Mood</label>
@@ -215,6 +220,7 @@ function viewDetail(id) {
             </div>
         `;
     } else {
+        // DESSERT OPTIONS
         container.innerHTML = `
              <div>
                 <label class="block text-white font-bold mb-3">Extra Toppings (+RM 0.50)</label>
@@ -237,16 +243,19 @@ function viewDetail(id) {
     showPage('detailPage');
 }
 
+// Helper: Circular Buttons
 function createOptionHTML(group, value, label, active=false) {
     const activeClass = active ? "bg-street-yellow text-black border-street-yellow font-bold" : "border-zinc-700 text-gray-400";
     return `<div onclick="selectOption('${group}', this)" data-value="${value}" class="option-btn ${group}-btn w-12 h-12 rounded-full border flex items-center justify-center cursor-pointer transition ${activeClass}">${label}</div>`;
 }
 
+// Helper: Mood Buttons
 function createMoodHTML(value, icon, active=false) {
     const activeClass = active ? "bg-street-yellow text-black border-street-yellow" : "bg-zinc-800 border-zinc-700 text-gray-500";
     return `<div onclick="selectOption('mood', this)" data-value="${value}" class="option-btn mood-btn w-14 h-14 rounded-full border flex items-center justify-center cursor-pointer transition text-xl ${activeClass}"><i class="${icon}"></i></div>`;
 }
 
+// Logic for clicking buttons
 window.selectOption = function(group, el) {
     document.querySelectorAll(`.${group}-btn`).forEach(e => {
         e.classList.remove("bg-street-yellow","text-black","border-street-yellow","font-bold");
@@ -340,7 +349,7 @@ async function submitCheckout(e) {
     if(!confirm(`Confirm Order for RM ${document.getElementById('checkoutTotal').innerText.replace('RM ', '')}?`)) return;
 
     try {
-        // --- SAFETY CHECK: STOP if stock is already negative ---
+        // --- SAFETY CHECK: STOP if stock is already negative/zero ---
         for (const item of cart) {
             const freshProd = products.find(p => p.id === item.id);
             if (!freshProd || freshProd.stock <= 0) {

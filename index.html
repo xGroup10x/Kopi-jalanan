@@ -121,31 +121,34 @@
             </div>
         </section>
 
-        <section id="detailPage" class="page-section hidden px-6 py-12 max-w-5xl mx-auto">
+        <section id="detailPage" class="page-section hidden px-6 py-12 max-w-6xl mx-auto">
             <button onclick="showPage('menuPage')" class="mb-6 text-gray-400 hover:text-white flex items-center gap-2">
                 <i class="fas fa-arrow-left"></i> Back to Menu
             </button>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div class="h-96 bg-zinc-800 border border-zinc-700">
-                    <img id="detailImage" src="" class="w-full h-full object-cover">
+        
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+                
+                <div class="h-[500px] bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden p-8 flex items-center justify-center">
+                    <img id="detailImage" src="" class="w-full h-full object-contain drop-shadow-2xl">
                 </div>
-
-                <div class="flex flex-col justify-center">
-                    <h2 id="detailName" class="text-4xl font-oswald font-bold uppercase mb-2">Product Name</h2>
-                    <div id="detailPrice" class="text-2xl text-street-yellow font-bold mb-6">RM 0.00</div>
-                    <p id="detailDesc" class="text-gray-400 mb-8 leading-relaxed">Description goes here.</p>
+        
+                <div class="flex flex-col">
+                    <div class="mb-8">
+                        <h2 id="detailName" class="text-4xl font-oswald font-bold uppercase mb-2 text-white">Product Name</h2>
+                        <p id="detailDesc" class="text-gray-400 text-sm mb-4 leading-relaxed">Description goes here.</p>
+                        <div id="detailPrice" class="text-3xl text-street-yellow font-bold">RM 0.00</div>
+                    </div>
                     
-                    <div id="detailOptions" class="mb-8 space-y-4 border-t border-zinc-800 pt-4">
+                    <div id="detailOptions" class="space-y-8 mb-8">
                         </div>
-
-                    <button id="detailAddBtn" class="w-full bg-white text-black font-bold uppercase tracking-widest hover:bg-street-yellow transition p-3">
-                        Add Customized Order
+        
+                    <button id="detailAddBtn" class="w-full bg-street-yellow text-black font-bold text-lg uppercase tracking-widest hover:bg-white transition py-4 rounded-xl shadow-lg shadow-yellow-900/20">
+                        Add to Order
                     </button>
                 </div>
             </div>
         </section>
-
+        
         <section id="cartPage" class="page-section hidden px-6 py-12 max-w-3xl mx-auto">
             <h2 class="text-3xl font-oswald font-bold uppercase mb-8">Your Cart</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">

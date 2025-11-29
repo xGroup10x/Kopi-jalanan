@@ -4,23 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kopi Jalanan | Fuel for the Hustle</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="min-h-screen flex flex-col bg-zinc-900 text-gray-100 font-roboto">
+<body class="min-h-screen flex flex-col">
 
     <nav class="sticky top-0 z-50 bg-black border-b border-zinc-800 px-6 py-4 flex justify-between items-center">
         <div class="text-2xl font-oswald font-bold tracking-wider text-white cursor-pointer" onclick="showPage('homePage')">
             KOPI JALANAN<span class="text-street-yellow">.</span>
         </div>
-
         <div class="flex items-center gap-6">
             <button onclick="showPage('homePage')" class="hidden md:block text-sm uppercase tracking-widest hover:text-street-yellow transition">Home</button>
             <button onclick="showPage('menuPage')" class="text-sm uppercase tracking-widest hover:text-street-yellow transition">Menu</button>
@@ -34,7 +29,7 @@
                 Admin Panel
             </button>
 
-            <button id="navAuthBtn" onclick="handleAuthClick()" class="bg-zinc-800 text-white px-4 py-2 text-xs uppercase font-bold tracking-widest hover:bg-zinc-700 transition border border-zinc-700">
+            <button id="navAuthBtn" onclick="handleAuthClick()" class="bg-zinc-800 text-white px-4 py-2 text-xs uppercase font-bold tracking-widest hover:bg-zinc-700 transition">
                 Login
             </button>
         </div>
@@ -57,71 +52,64 @@
                     </button>
                 </div>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-0 border-t border-zinc-800 bg-black">
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-0 border-t border-zinc-800">
                 <div class="p-12 text-center border-b md:border-b-0 md:border-r border-zinc-800">
                     <i class="fas fa-bolt text-3xl text-street-yellow mb-4"></i>
-                    <h3 class="font-oswald text-xl mb-2 text-white">Fast Pickup</h3>
-                    <p class="text-gray-500 text-sm">Skip the line. Your coffee is ready when you arrive.</p>
+                    <h3 class="font-oswald text-xl mb-2">Fast Pickup</h3>
+                    <p class="text-gray-500 text-sm">Skip the line. Ready when you arrive.</p>
                 </div>
                 <div class="p-12 text-center border-b md:border-b-0 md:border-r border-zinc-800">
                     <i class="fas fa-mug-hot text-3xl text-street-yellow mb-4"></i>
-                    <h3 class="font-oswald text-xl mb-2 text-white">Real Beans</h3>
-                    <p class="text-gray-500 text-sm">100% Arabica/Robusta blend. No instant powder.</p>
+                    <h3 class="font-oswald text-xl mb-2">Real Beans</h3>
+                    <p class="text-gray-500 text-sm">100% Arabica/Robusta blend.</p>
                 </div>
                 <div class="p-12 text-center">
                     <i class="fas fa-tag text-3xl text-street-yellow mb-4"></i>
-                    <h3 class="font-oswald text-xl mb-2 text-white">Student Prices</h3>
-                    <p class="text-gray-500 text-sm">Affordable caffeine for late night study sessions.</p>
+                    <h3 class="font-oswald text-xl mb-2">Student Prices</h3>
+                    <p class="text-gray-500 text-sm">Affordable caffeine for study sessions.</p>
                 </div>
             </div>
         </section>
 
-        <section id="authPage" class="page-section hidden px-6 py-12 max-w-4xl mx-auto">
-            <h2 class="text-3xl font-oswald font-bold uppercase mb-8 text-center text-white">Join the Club</h2>
+        <section id="authPage" class="page-section hidden px-6 py-12 max-w-md mx-auto">
+            <h2 class="text-3xl font-oswald font-bold uppercase mb-8 text-center">Admin Access</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-zinc-900 p-8 border border-zinc-800 shadow-xl">
-                    <h3 class="text-xl font-oswald mb-4 text-street-yellow">Login</h3>
-                    <p class="text-sm text-gray-500 mb-6">Welcome back, hustler.</p>
-                    <form onsubmit="handleLogin(event)" class="space-y-4">
-                        <input type="email" id="loginEmail" placeholder="Email" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
-                        <input type="password" id="loginPass" placeholder="Password" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
-                        <button type="submit" class="w-full bg-white text-black font-bold py-3 uppercase tracking-widest hover:bg-gray-200 transition">
-                            Sign In
-                        </button>
-                    </form>
-                </div>
-
-                <div class="bg-zinc-900 p-8 border border-zinc-800 relative overflow-hidden shadow-xl">
-                    <div class="absolute top-0 right-0 bg-street-yellow text-black text-xs font-bold px-3 py-1">NEW?</div>
-                    <h3 class="text-xl font-oswald mb-4 text-white">Create Account</h3>
-                    <p class="text-sm text-gray-500 mb-6">Join us to order online.</p>
-                    <form onsubmit="handleSignUp(event)" class="space-y-4">
-                        <input type="email" id="signupEmail" placeholder="Email" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
-                        <input type="password" id="signupPass" placeholder="Create Password" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
-                        <button type="submit" class="w-full bg-street-yellow text-black font-bold py-3 uppercase tracking-widest hover:bg-white hover:text-black transition">
-                            Sign Up
-                        </button>
-                    </form>
-                </div>
+            <div class="bg-zinc-900 p-8 border border-zinc-800 shadow-xl">
+                <h3 class="text-xl font-oswald mb-4 text-street-yellow">Log In</h3>
+                <p class="text-gray-500 text-xs mb-4">Enter admin credentials.</p>
+                <form onsubmit="handleLogin(event)" class="space-y-4">
+                    <input type="email" id="loginEmail" placeholder="Email" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
+                    <input type="password" id="loginPass" placeholder="Password" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
+                    <button type="submit" class="w-full bg-white text-black font-bold py-3 uppercase tracking-widest hover:bg-street-yellow transition">
+                        Log In
+                    </button>
+                </form>
+            </div>
+            
+            <div class="hidden mt-8 bg-zinc-900 p-8 border border-zinc-800 opacity-50">
+                <form onsubmit="handleSignUp(event)">
+                    <input type="email" id="signupEmail" class="w-full bg-black border border-zinc-700 p-3 text-white">
+                    <input type="password" id="signupPass" class="w-full bg-black border border-zinc-700 p-3 text-white">
+                    <button type="submit">Sign Up</button>
+                </form>
             </div>
         </section>
 
         <section id="menuPage" class="page-section hidden px-6 py-12 max-w-7xl mx-auto">
-            <div class="text-center mb-12">
-                <h2 class="text-4xl font-oswald font-bold uppercase mb-2 text-white">The Menu</h2>
+            <div class="text-center mb-8">
+                <h2 class="text-4xl font-oswald font-bold uppercase mb-2">The Menu</h2>
                 <div class="w-20 h-1 bg-street-yellow mx-auto"></div>
             </div>
 
-            <div class="flex justify-center gap-4 mb-8 text-sm text-gray-500">
-                <span class="text-white cursor-pointer border-b border-street-yellow">All</span>
-                <span class="hover:text-white cursor-pointer">Coffee</span>
-                <span class="hover:text-white cursor-pointer">Non-Coffee</span>
+            <div class="flex justify-center gap-6 mb-8 text-sm text-gray-500 font-bold uppercase tracking-widest">
+                <button onclick="filterMenu('all')" class="hover:text-street-yellow focus:text-street-yellow transition">All</button>
+                <button onclick="filterMenu('coffee')" class="hover:text-street-yellow focus:text-street-yellow transition">Coffee</button>
+                <button onclick="filterMenu('dessert')" class="hover:text-street-yellow focus:text-street-yellow transition">Dessert</button>
             </div>
 
             <div id="menuGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <p class="col-span-full text-center text-gray-500">Loading brews from database...</p>
+                <p class="col-span-full text-center text-gray-500">Loading brews...</p>
             </div>
         </section>
 
@@ -129,16 +117,14 @@
             <button onclick="showPage('menuPage')" class="mb-6 text-gray-400 hover:text-white flex items-center gap-2">
                 <i class="fas fa-arrow-left"></i> Back to Menu
             </button>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div class="h-96 bg-zinc-800 border border-zinc-700 p-2">
+                <div class="h-96 bg-zinc-800 border border-zinc-700">
                     <img id="detailImage" src="" class="w-full h-full object-cover">
                 </div>
                 <div class="flex flex-col justify-center">
-                    <h2 id="detailName" class="text-4xl font-oswald font-bold uppercase mb-2 text-white">Product Name</h2>
+                    <h2 id="detailName" class="text-4xl font-oswald font-bold uppercase mb-2">Product Name</h2>
                     <div id="detailPrice" class="text-2xl text-street-yellow font-bold mb-6">RM 0.00</div>
                     <p id="detailDesc" class="text-gray-400 mb-8 leading-relaxed">Description goes here.</p>
-
                     <div class="flex gap-4">
                         <input type="number" value="1" min="1" class="bg-black border border-zinc-600 text-white w-16 text-center p-3">
                         <button id="detailAddBtn" class="flex-1 bg-white text-black font-bold uppercase tracking-widest hover:bg-street-yellow transition p-3">
@@ -150,78 +136,39 @@
         </section>
 
         <section id="cartPage" class="page-section hidden px-6 py-12 max-w-3xl mx-auto">
-            <h2 class="text-3xl font-oswald font-bold uppercase mb-8 text-white">Your Cart</h2>
-
+            <h2 class="text-3xl font-oswald font-bold uppercase mb-8">Your Cart</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="md:col-span-2 bg-zinc-900 p-6 border border-zinc-800">
                     <div id="cartList" class="space-y-4">
-                        <p class="text-gray-500">Your basket is empty.</p>
+                        <p class="text-gray-500">Empty</p>
                     </div>
                 </div>
-
-                <div class="bg-zinc-800 p-6 h-fit border border-zinc-700">
-                    <h3 class="font-oswald text-xl mb-4 text-white">Summary</h3>
+                <div class="bg-zinc-800 p-6 h-fit">
+                    <h3 class="font-oswald text-xl mb-4">Summary</h3>
                     <div class="flex justify-between mb-2 text-gray-400">
                         <span>Subtotal</span>
                         <span id="cartTotal">RM 0.00</span>
                     </div>
-                    <button onclick="showPage('checkoutPage')" class="w-full bg-street-yellow text-black font-bold py-3 mt-4 uppercase tracking-widest hover:bg-white transition">
+                    <div class="flex justify-between mb-6 text-gray-400">
+                        <span>Total</span>
+                        <span id="checkoutTotal">RM 0.00</span>
+                    </div>
+                    <button onclick="submitCheckout(event)" class="w-full bg-street-yellow text-black font-bold py-3 uppercase tracking-widest hover:bg-white transition">
                         Checkout
                     </button>
                 </div>
             </div>
         </section>
 
-        <section id="checkoutPage" class="page-section hidden px-6 py-12 max-w-2xl mx-auto">
-            <div class="mb-8 text-center">
-                <h2 class="text-3xl font-oswald font-bold uppercase text-white">Checkout</h2>
-                <p class="text-gray-500 mt-2">Total Due: <span id="checkoutTotal" class="text-street-yellow font-bold">RM 0.00</span></p>
-            </div>
-
-            <form onsubmit="submitCheckout(event)" class="space-y-6">
-                <div class="bg-zinc-900 p-6 border border-zinc-800">
-                    <h3 class="text-xl font-oswald mb-4 border-b border-zinc-700 pb-2 text-white">1. Contact Info</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs text-gray-500 uppercase mb-1">Name</label>
-                            <input type="text" required class="w-full bg-black border border-zinc-700 p-3 text-white">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-500 uppercase mb-1">Phone</label>
-                            <input type="tel" required class="w-full bg-black border border-zinc-700 p-3 text-white">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-zinc-900 p-6 border border-zinc-800">
-                    <h3 class="text-xl font-oswald mb-4 border-b border-zinc-700 pb-2 text-white">2. Payment Method</h3>
-                    <div class="space-y-3">
-                        <label class="flex items-center gap-3 p-3 border border-zinc-700 cursor-pointer hover:border-street-yellow transition">
-                            <input type="radio" name="payment" checked class="accent-street-yellow">
-                            <span class="text-white font-bold">Cash on Pickup</span>
-                        </label>
-                        <label class="flex items-center gap-3 p-3 border border-zinc-700 cursor-pointer hover:border-street-yellow transition">
-                            <input type="radio" name="payment" class="accent-street-yellow">
-                            <span class="text-white font-bold">Online Banking (FPX)</span>
-                        </label>
-                    </div>
-                </div>
-
-                <button type="submit" class="w-full bg-green-600 text-white font-bold py-4 text-lg uppercase tracking-widest hover:bg-green-500 transition shadow-lg shadow-green-900/20">
-                    Place Order
-                </button>
-            </form>
-        </section>
-
         <section id="adminPage" class="page-section hidden px-6 py-12 max-w-4xl mx-auto">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-3xl font-oswald font-bold uppercase text-red-500">Admin Panel</h2>
-                <button onclick="handleAuthClick()" class="text-gray-500 hover:text-white text-sm underline">Log Out</button>
+                <div class="text-gray-500 text-xs">Logged in as Admin</div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="bg-zinc-900 p-6 border border-zinc-800">
-                    <h3 class="font-oswald text-xl mb-4 text-white">Add Item</h3>
+                    <h3 class="font-oswald text-xl mb-4">Add New Product</h3>
                     <form id="adminForm" onsubmit="addProduct(event)" class="space-y-4">
                         <div>
                             <label class="block text-xs text-gray-500 mb-1">Product Name</label>
@@ -231,6 +178,15 @@
                             <label class="block text-xs text-gray-500 mb-1">Price (RM)</label>
                             <input type="number" id="prodPrice" step="0.01" required class="w-full bg-black border border-zinc-700 p-2 text-white">
                         </div>
+                        
+                        <div>
+                            <label class="block text-xs text-gray-500 mb-1">Category</label>
+                            <select id="prodCat" class="w-full bg-black border border-zinc-700 p-2 text-white">
+                                <option value="coffee">Coffee</option>
+                                <option value="dessert">Dessert</option>
+                            </select>
+                        </div>
+
                         <div>
                             <label class="block text-xs text-gray-500 mb-1">Description</label>
                             <textarea id="prodDesc" required rows="2" class="w-full bg-black border border-zinc-700 p-2 text-white"></textarea>
@@ -246,7 +202,7 @@
                 </div>
 
                 <div class="md:col-span-2 bg-zinc-900 p-6 border border-zinc-800 overflow-x-auto">
-                    <h3 class="font-oswald text-xl mb-4 text-white">Inventory</h3>
+                    <h3 class="font-oswald text-xl mb-4">Current Inventory</h3>
                     <table class="w-full text-sm text-left text-gray-400">
                         <thead class="text-xs text-gray-500 uppercase bg-black">
                             <tr>
@@ -255,8 +211,7 @@
                                 <th class="p-3 text-right">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="adminTableBody">
-                            </tbody>
+                        <tbody id="adminTableBody"></tbody>
                     </table>
                 </div>
             </div>

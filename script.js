@@ -24,7 +24,7 @@ let products = [];
 let currentUser = null;
 let activeCategory = 'all'; 
 
-// ⚠️ ADMIN EMAIL (Must match the one you log in with)
+// ⚠️ ADMIN EMAIL
 const ADMIN_EMAIL = "kopijalanan@gmail.com"; 
 
 // --- 4. STARTUP LISTENERS ---
@@ -35,14 +35,13 @@ document.addEventListener("DOMContentLoaded", () => {
     onSnapshot(productsRef, (snapshot) => {
         products = [];
         snapshot.forEach((doc) => {
-            // Combine data with ID safely
             products.push({ ...doc.data(), id: doc.id });
         });
         renderMenu();
         renderAdminTable();
     });
 
-    // B. Listen for Auth Changes (Login/Logout)
+    // B. Listen for Auth Changes
     onAuthStateChanged(auth, (user) => {
         currentUser = user;
         updateNavUI(user);
@@ -59,7 +58,6 @@ function updateNavUI(user) {
         authBtn.innerText = "Logout";
         authBtn.classList.replace('bg-zinc-800', 'bg-red-600');
         
-        // Only show Admin Panel button if email matches
         if (user.email === ADMIN_EMAIL) {
             adminBtn.classList.remove('hidden');
         } else {
@@ -118,7 +116,6 @@ function renderMenu() {
     if(!grid) return;
     grid.innerHTML = '';
 
-    // Filter Logic
     const filteredProducts = activeCategory === 'all' 
         ? products 
         : products.filter(p => p.category === activeCategory);
@@ -129,52 +126,61 @@ function renderMenu() {
     }
     
     filteredProducts.forEach(prod => {
-        // Stock Logic
-        const isSoldOut = prod.stock < 1;
+        // 1. LOGIC: Check Stock (Treat <= 0 as sold out)
+        const isSoldOut = prod.stock <= 0;
+        
+        // 2. VISUALS: Green for Available, Red for Sold Out
+        const badgeColor = isSoldOut ? "bg-red-600" : "bg-green-600";
+        const badgeText = isSoldOut ? "Out of Stock" : `${prod.stock} left`;
+
+        // 3. BUTTONS: Disable if sold out
         const btnText = isSoldOut ? "SOLD OUT" : "Customize";
         const btnClass = isSoldOut 
             ? "bg-zinc-700 text-gray-500 cursor-not-allowed" 
-            : "bg-white text-black hover:bg-street-yellow";
+            : "bg-white text-black hover:bg-street-yellow cursor-pointer";
         const clickAction = isSoldOut ? "" : `onclick="viewDetail('${prod.id}')"`;
+        const imgOpacity = isSoldOut ? "opacity-50 grayscale" : "";
 
         grid.innerHTML += `
             <div class="bg-zinc-800 border border-zinc-700 p-4 transition hover:border-street-yellow group relative">
-                <div class="absolute top-2 left-2 bg-black/80 text-white text-xs px-2 py-1 rounded border border-zinc-700">
-                    ${prod.stock || 0} left
+                
+                <div class="h-48 overflow-hidden mb-4 relative">
+                    <img src="${prod.imgUrl}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 ${imgOpacity}">
+                    
+                    <div class="absolute top-2 right-2 bg-street-yellow text-black font-bold px-2 py-1 text-sm z-10">
+                        RM ${prod.price.toFixed(2)}
+                    </div>
+
+                    <div class="absolute top-2 left-2 ${badgeColor} text-white text-xs font-bold px-2 py-1 rounded z-10 shadow-md">
+                        ${badgeText}
+                    </div>
                 </div>
 
-                <div class="h-48 overflow-hidden mb-4 relative">
-                    <img src="${prod.imgUrl}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 ${isSoldOut ? 'grayscale opacity-50' : ''}">
-                    <div class="absolute top-2 right-2 bg-street-yellow text-black font-bold px-2 py-1 text-sm">RM ${prod.price.toFixed(2)}</div>
-                </div>
                 <h3 class="text-2xl font-oswald uppercase mb-1 text-white">${prod.name}</h3>
                 <p class="text-gray-400 text-sm mb-4 truncate">${prod.desc}</p>
                 
-                <button ${clickAction} class="w-full font-bold py-2 text-xs uppercase tracking-widest transition ${btnClass}">
+                <button ${clickAction} class="w-full font-bold py-2 text-xs uppercase tracking-widest transition ${btnClass}" ${isSoldOut ? 'disabled' : ''}>
                     ${btnText}
                 </button>
             </div>`;
     });
 }
 
-// --- 7. DETAILS & CUSTOMIZATION (App-Style) ---
+// --- 7. DETAILS & CUSTOMIZATION ---
 
 function viewDetail(id) {
     const prod = products.find(p => p.id === id);
-    if (!prod || prod.stock < 1) return alert("Sorry, this item is sold out!");
+    if (!prod || prod.stock <= 0) return alert("Sorry, this item is sold out!");
 
-    // Populate Basic Info
     document.getElementById('detailImage').src = prod.imgUrl;
     document.getElementById('detailName').innerText = prod.name;
     document.getElementById('detailPrice').innerText = `RM ${prod.price.toFixed(2)}`;
     document.getElementById('detailDesc').innerText = prod.desc;
     
-    // Generate Dynamic Options
     const container = document.getElementById('detailOptions');
     container.innerHTML = '';
 
     if (prod.category === 'coffee') {
-        // COFFEE: Show Mood, Size, Sugar, Ice
         container.innerHTML = `
             <div>
                 <label class="block text-white font-bold mb-3">Mood</label>
@@ -209,7 +215,6 @@ function viewDetail(id) {
             </div>
         `;
     } else {
-        // DESSERT: Show Toppings Checkboxes
         container.innerHTML = `
              <div>
                 <label class="block text-white font-bold mb-3">Extra Toppings (+RM 0.50)</label>
@@ -228,12 +233,10 @@ function viewDetail(id) {
         `;
     }
 
-    // Attach "Add" Button Logic
     document.getElementById('detailAddBtn').onclick = () => addCustomToCart(prod.id);
     showPage('detailPage');
 }
 
-// Helpers for creating circular buttons
 function createOptionHTML(group, value, label, active=false) {
     const activeClass = active ? "bg-street-yellow text-black border-street-yellow font-bold" : "border-zinc-700 text-gray-400";
     return `<div onclick="selectOption('${group}', this)" data-value="${value}" class="option-btn ${group}-btn w-12 h-12 rounded-full border flex items-center justify-center cursor-pointer transition ${activeClass}">${label}</div>`;
@@ -244,9 +247,7 @@ function createMoodHTML(value, icon, active=false) {
     return `<div onclick="selectOption('mood', this)" data-value="${value}" class="option-btn mood-btn w-14 h-14 rounded-full border flex items-center justify-center cursor-pointer transition text-xl ${activeClass}"><i class="${icon}"></i></div>`;
 }
 
-// Handle Button Selection (Switching colors)
 window.selectOption = function(group, el) {
-    // Reset all in group
     document.querySelectorAll(`.${group}-btn`).forEach(e => {
         e.classList.remove("bg-street-yellow","text-black","border-street-yellow","font-bold");
         e.classList.add("border-zinc-700","text-gray-400");
@@ -255,12 +256,11 @@ window.selectOption = function(group, el) {
             e.classList.add("bg-zinc-800", "text-gray-500");
         }
     });
-    // Activate clicked one
     el.classList.remove("border-zinc-700","text-gray-400","bg-zinc-800","text-gray-500");
     el.classList.add("bg-street-yellow","text-black","border-street-yellow","font-bold");
 };
 
-// --- 8. CART & CHECKOUT FUNCTIONS ---
+// --- 8. CART & CHECKOUT ---
 
 function addCustomToCart(id) {
     const prod = products.find(p => p.id === id);
@@ -268,32 +268,24 @@ function addCustomToCart(id) {
     let details = [];
 
     if (prod.category === 'coffee') {
-        // Scrape selected coffee options
         const mood = document.querySelector('.mood-btn.bg-street-yellow')?.dataset.value || 'Cold';
         const size = document.querySelector('.size-btn.bg-street-yellow')?.dataset.value || 'M';
         const sugar = document.querySelector('.sugar-btn.bg-street-yellow')?.dataset.value || '50%';
         const ice = document.querySelector('.ice-btn.bg-street-yellow')?.dataset.value || 'Normal';
 
-        // Price Logic
         if(size === 'L') finalPrice += 2;
         if(size === 'M') finalPrice += 1;
 
         details.push(`${mood} • Size ${size}`);
         details.push(`${sugar} Sugar • ${ice} Ice`);
     } else {
-        // Scrape dessert toppings
         document.querySelectorAll('.opt-topping:checked').forEach(t => { 
             finalPrice += 0.5; 
             details.push(t.value); 
         });
     }
 
-    cart.push({
-        ...prod,
-        price: finalPrice,
-        customization: details.join(" | ")
-    });
-
+    cart.push({ ...prod, price: finalPrice, customization: details.join(" | ") });
     alert("Added to cart!");
     updateCartUI();
     showPage('menuPage');
@@ -324,7 +316,6 @@ function updateCartUI() {
                 </div>`;
         });
     }
-    
     document.getElementById('cartTotal').innerText = `RM ${total.toFixed(2)}`;
     document.getElementById('checkoutTotal').innerText = `RM ${total.toFixed(2)}`;
 }
@@ -337,29 +328,28 @@ function removeFromCart(index) {
 async function submitCheckout(e) {
     e.preventDefault();
 
-    // 1. Check Login
-    if (!currentUser) {
-        alert("Please Login or Sign Up to place an order!");
-        showPage('authPage');
-        return;
-    }
-
-    // 2. Check Cart
+    if (!currentUser) { alert("Please Login!"); showPage('authPage'); return; }
     if(cart.length === 0) return alert("Cart is empty!");
 
-    // 3. Get Address Info
     const name = document.getElementById('custName').value;
     const phone = document.getElementById('custPhone').value;
     const address = document.getElementById('custAddress').value;
 
-    if (!name || !phone || !address) {
-        return alert("Please fill in Name, Phone, and Address.");
-    }
+    if (!name || !phone || !address) return alert("Please fill details.");
 
     if(!confirm(`Confirm Order for RM ${document.getElementById('checkoutTotal').innerText.replace('RM ', '')}?`)) return;
 
     try {
-        // 4. Save Order to Database
+        // --- SAFETY CHECK: STOP if stock is already negative ---
+        for (const item of cart) {
+            const freshProd = products.find(p => p.id === item.id);
+            if (!freshProd || freshProd.stock <= 0) {
+                alert(`SORRY! ${item.name} is currently out of stock.`);
+                return; // Stop the entire order
+            }
+        }
+
+        // --- PROCESS ORDER ---
         await addDoc(collection(db, "orders"), {
             userId: currentUser.uid,
             email: currentUser.email,
@@ -372,7 +362,7 @@ async function submitCheckout(e) {
             status: "Pending"
         });
 
-        // 5. Deduct Stock for each item
+        // Deduct Stock
         for (const item of cart) {
             const productRef = doc(db, "products", item.id);
             await updateDoc(productRef, { stock: increment(-1) });
@@ -386,7 +376,7 @@ async function submitCheckout(e) {
 
     } catch (error) {
         console.error(error);
-        alert("Error placing order: " + error.message);
+        alert("Error: " + error.message);
     }
 }
 
@@ -425,7 +415,9 @@ function renderAdminTable() {
     tbody.innerHTML = '';
 
     products.forEach(p => {
+        // Red color if stock is low (< 10)
         const stockColor = (p.stock < 10) ? 'text-red-500' : 'text-street-yellow';
+        
         tbody.innerHTML += `
             <tr class="border-b border-zinc-700">
                 <td class="p-3">
@@ -451,7 +443,7 @@ function showPage(pageId) {
     window.scrollTo(0, 0);
 }
 
-// --- EXPORTS (Window Binding) ---
+// --- EXPORTS ---
 window.handleAuthClick = handleAuthClick;
 window.handleLogin = handleLogin;
 window.handleSignUp = handleSignUp;
@@ -461,10 +453,10 @@ window.renderMenu = renderMenu;
 window.renderAdminTable = renderAdminTable;
 window.updateCartUI = updateCartUI;
 window.viewDetail = viewDetail;
-window.addToCart = addCustomToCart; // Ensure logic uses custom add
+window.addToCart = addCustomToCart;
 window.addCustomToCart = addCustomToCart;
 window.removeFromCart = removeFromCart;
 window.showPage = showPage;
 window.submitCheckout = submitCheckout;
 window.filterMenu = filterMenu;
-window.selectOption = selectOption; // Don't forget this for UI buttons!
+window.selectOption = selectOption;

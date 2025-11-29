@@ -5,39 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kopi Jalanan | Fuel for the Hustle</title>
 
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 
-    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- External CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col bg-zinc-900 text-gray-100 font-roboto">
 
     <nav class="sticky top-0 z-50 bg-black border-b border-zinc-800 px-6 py-4 flex justify-between items-center">
         <div class="text-2xl font-oswald font-bold tracking-wider text-white cursor-pointer" onclick="showPage('homePage')">
             KOPI JALANAN<span class="text-street-yellow">.</span>
         </div>
+
         <div class="flex items-center gap-6">
             <button onclick="showPage('homePage')" class="hidden md:block text-sm uppercase tracking-widest hover:text-street-yellow transition">Home</button>
             <button onclick="showPage('menuPage')" class="text-sm uppercase tracking-widest hover:text-street-yellow transition">Menu</button>
+            
             <button onclick="showPage('cartPage')" class="relative text-xl hover:text-street-yellow transition">
                 <i class="fas fa-shopping-bag"></i>
                 <span id="cartCount" class="absolute -top-2 -right-2 bg-street-yellow text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
             </button>
-            <button onclick="showPage('adminPage')" class="text-zinc-600 hover:text-zinc-300 text-xs uppercase border border-zinc-700 px-2 py-1 rounded">Admin</button>
+
+            <button id="navAdminBtn" onclick="showPage('adminPage')" class="hidden text-red-500 hover:text-red-400 text-xs uppercase border border-red-900 px-2 py-1 rounded">
+                Admin Panel
+            </button>
+
+            <button id="navAuthBtn" onclick="handleAuthClick()" class="bg-zinc-800 text-white px-4 py-2 text-xs uppercase font-bold tracking-widest hover:bg-zinc-700 transition border border-zinc-700">
+                Login
+            </button>
         </div>
     </nav>
 
     <main class="flex-grow">
 
-        <!-- HOME PAGE -->
         <section id="homePage" class="page-section block">
             <div class="relative h-[70vh] flex items-center justify-center bg-[url('https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=1974&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat">
                 <div class="absolute inset-0 bg-black/70"></div>
@@ -54,29 +58,59 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-0 border-t border-zinc-800">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-0 border-t border-zinc-800 bg-black">
                 <div class="p-12 text-center border-b md:border-b-0 md:border-r border-zinc-800">
                     <i class="fas fa-bolt text-3xl text-street-yellow mb-4"></i>
-                    <h3 class="font-oswald text-xl mb-2">Fast Pickup</h3>
+                    <h3 class="font-oswald text-xl mb-2 text-white">Fast Pickup</h3>
                     <p class="text-gray-500 text-sm">Skip the line. Your coffee is ready when you arrive.</p>
                 </div>
                 <div class="p-12 text-center border-b md:border-b-0 md:border-r border-zinc-800">
                     <i class="fas fa-mug-hot text-3xl text-street-yellow mb-4"></i>
-                    <h3 class="font-oswald text-xl mb-2">Real Beans</h3>
+                    <h3 class="font-oswald text-xl mb-2 text-white">Real Beans</h3>
                     <p class="text-gray-500 text-sm">100% Arabica/Robusta blend. No instant powder.</p>
                 </div>
                 <div class="p-12 text-center">
                     <i class="fas fa-tag text-3xl text-street-yellow mb-4"></i>
-                    <h3 class="font-oswald text-xl mb-2">Student Prices</h3>
+                    <h3 class="font-oswald text-xl mb-2 text-white">Student Prices</h3>
                     <p class="text-gray-500 text-sm">Affordable caffeine for late night study sessions.</p>
                 </div>
             </div>
         </section>
 
-        <!-- MENU PAGE -->
+        <section id="authPage" class="page-section hidden px-6 py-12 max-w-4xl mx-auto">
+            <h2 class="text-3xl font-oswald font-bold uppercase mb-8 text-center text-white">Join the Club</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-zinc-900 p-8 border border-zinc-800 shadow-xl">
+                    <h3 class="text-xl font-oswald mb-4 text-street-yellow">Login</h3>
+                    <p class="text-sm text-gray-500 mb-6">Welcome back, hustler.</p>
+                    <form onsubmit="handleLogin(event)" class="space-y-4">
+                        <input type="email" id="loginEmail" placeholder="Email" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
+                        <input type="password" id="loginPass" placeholder="Password" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
+                        <button type="submit" class="w-full bg-white text-black font-bold py-3 uppercase tracking-widest hover:bg-gray-200 transition">
+                            Sign In
+                        </button>
+                    </form>
+                </div>
+
+                <div class="bg-zinc-900 p-8 border border-zinc-800 relative overflow-hidden shadow-xl">
+                    <div class="absolute top-0 right-0 bg-street-yellow text-black text-xs font-bold px-3 py-1">NEW?</div>
+                    <h3 class="text-xl font-oswald mb-4 text-white">Create Account</h3>
+                    <p class="text-sm text-gray-500 mb-6">Join us to order online.</p>
+                    <form onsubmit="handleSignUp(event)" class="space-y-4">
+                        <input type="email" id="signupEmail" placeholder="Email" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
+                        <input type="password" id="signupPass" placeholder="Create Password" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
+                        <button type="submit" class="w-full bg-street-yellow text-black font-bold py-3 uppercase tracking-widest hover:bg-white hover:text-black transition">
+                            Sign Up
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
         <section id="menuPage" class="page-section hidden px-6 py-12 max-w-7xl mx-auto">
             <div class="text-center mb-12">
-                <h2 class="text-4xl font-oswald font-bold uppercase mb-2">The Menu</h2>
+                <h2 class="text-4xl font-oswald font-bold uppercase mb-2 text-white">The Menu</h2>
                 <div class="w-20 h-1 bg-street-yellow mx-auto"></div>
             </div>
 
@@ -84,26 +118,24 @@
                 <span class="text-white cursor-pointer border-b border-street-yellow">All</span>
                 <span class="hover:text-white cursor-pointer">Coffee</span>
                 <span class="hover:text-white cursor-pointer">Non-Coffee</span>
-                <span class="hover:text-white cursor-pointer">Pastries</span>
             </div>
 
             <div id="menuGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <p class="col-span-full text-center text-gray-500">Loading brews...</p>
+                <p class="col-span-full text-center text-gray-500">Loading brews from database...</p>
             </div>
         </section>
 
-        <!-- DETAILS PAGE -->
         <section id="detailPage" class="page-section hidden px-6 py-12 max-w-5xl mx-auto">
             <button onclick="showPage('menuPage')" class="mb-6 text-gray-400 hover:text-white flex items-center gap-2">
                 <i class="fas fa-arrow-left"></i> Back to Menu
             </button>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div class="h-96 bg-zinc-800 border border-zinc-700">
+                <div class="h-96 bg-zinc-800 border border-zinc-700 p-2">
                     <img id="detailImage" src="" class="w-full h-full object-cover">
                 </div>
                 <div class="flex flex-col justify-center">
-                    <h2 id="detailName" class="text-4xl font-oswald font-bold uppercase mb-2">Product Name</h2>
+                    <h2 id="detailName" class="text-4xl font-oswald font-bold uppercase mb-2 text-white">Product Name</h2>
                     <div id="detailPrice" class="text-2xl text-street-yellow font-bold mb-6">RM 0.00</div>
                     <p id="detailDesc" class="text-gray-400 mb-8 leading-relaxed">Description goes here.</p>
 
@@ -117,79 +149,60 @@
             </div>
         </section>
 
-        <!-- CART PAGE -->
         <section id="cartPage" class="page-section hidden px-6 py-12 max-w-3xl mx-auto">
-            <h2 class="text-3xl font-oswald font-bold uppercase mb-8">Your Cart</h2>
+            <h2 class="text-3xl font-oswald font-bold uppercase mb-8 text-white">Your Cart</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="md:col-span-2 bg-zinc-900 p-6 border border-zinc-800">
                     <div id="cartList" class="space-y-4">
-                        <p class="text-gray-500">Empty</p>
+                        <p class="text-gray-500">Your basket is empty.</p>
                     </div>
                 </div>
 
-                <div class="bg-zinc-800 p-6 h-fit">
-                    <h3 class="font-oswald text-xl mb-4">Summary</h3>
+                <div class="bg-zinc-800 p-6 h-fit border border-zinc-700">
+                    <h3 class="font-oswald text-xl mb-4 text-white">Summary</h3>
                     <div class="flex justify-between mb-2 text-gray-400">
                         <span>Subtotal</span>
                         <span id="cartTotal">RM 0.00</span>
                     </div>
-                    <div class="flex justify-between mb-6 text-gray-400">
-                        <span>Tax (0%)</span>
-                        <span>RM 0.00</span>
-                    </div>
-                    <button onclick="showPage('checkoutPage')" class="w-full bg-street-yellow text-black font-bold py-3 uppercase tracking-widest hover:bg-white transition">
+                    <button onclick="showPage('checkoutPage')" class="w-full bg-street-yellow text-black font-bold py-3 mt-4 uppercase tracking-widest hover:bg-white transition">
                         Checkout
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- CHECKOUT PAGE -->
         <section id="checkoutPage" class="page-section hidden px-6 py-12 max-w-2xl mx-auto">
             <div class="mb-8 text-center">
-                <h2 class="text-3xl font-oswald font-bold uppercase">Secure Checkout</h2>
+                <h2 class="text-3xl font-oswald font-bold uppercase text-white">Checkout</h2>
                 <p class="text-gray-500 mt-2">Total Due: <span id="checkoutTotal" class="text-street-yellow font-bold">RM 0.00</span></p>
             </div>
 
             <form onsubmit="submitCheckout(event)" class="space-y-6">
                 <div class="bg-zinc-900 p-6 border border-zinc-800">
-                    <h3 class="text-xl font-oswald mb-4 border-b border-zinc-700 pb-2">1. Contact Info</h3>
+                    <h3 class="text-xl font-oswald mb-4 border-b border-zinc-700 pb-2 text-white">1. Contact Info</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs text-gray-500 uppercase mb-1">Name</label>
                             <input type="text" required class="w-full bg-black border border-zinc-700 p-3 text-white">
                         </div>
                         <div>
-                            <label class="block text-xs text-gray-500 uppercase mb-1">Phone (WhatsApp)</label>
+                            <label class="block text-xs text-gray-500 uppercase mb-1">Phone</label>
                             <input type="tel" required class="w-full bg-black border border-zinc-700 p-3 text-white">
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-zinc-900 p-6 border border-zinc-800">
-                    <h3 class="text-xl font-oswald mb-4 border-b border-zinc-700 pb-2">2. Payment</h3>
+                    <h3 class="text-xl font-oswald mb-4 border-b border-zinc-700 pb-2 text-white">2. Payment Method</h3>
                     <div class="space-y-3">
-                        <label class="flex items-center gap-3 p-3 border border-zinc-700 cursor-pointer hover:border-street-yellow">
-                            <input type="radio" name="payment" value="fpx" checked class="accent-street-yellow">
-                            <div>
-                                <div class="font-bold">Online Banking (FPX)</div>
-                                <div class="text-xs text-gray-500">ToyyibPay / BillPlz</div>
-                            </div>
+                        <label class="flex items-center gap-3 p-3 border border-zinc-700 cursor-pointer hover:border-street-yellow transition">
+                            <input type="radio" name="payment" checked class="accent-street-yellow">
+                            <span class="text-white font-bold">Cash on Pickup</span>
                         </label>
-                        <label class="flex items-center gap-3 p-3 border border-zinc-700 cursor-pointer hover:border-street-yellow">
-                            <input type="radio" name="payment" value="ewallet" class="accent-street-yellow">
-                            <div>
-                                <div class="font-bold">E-Wallet</div>
-                                <div class="text-xs text-gray-500">Touch 'n Go / GrabPay</div>
-                            </div>
-                        </label>
-                        <label class="flex items-center gap-3 p-3 border border-zinc-700 cursor-pointer hover:border-street-yellow">
-                            <input type="radio" name="payment" value="cash" class="accent-street-yellow">
-                            <div>
-                                <div class="font-bold">Cash on Pickup</div>
-                                <div class="text-xs text-gray-500">Pay at counter</div>
-                            </div>
+                        <label class="flex items-center gap-3 p-3 border border-zinc-700 cursor-pointer hover:border-street-yellow transition">
+                            <input type="radio" name="payment" class="accent-street-yellow">
+                            <span class="text-white font-bold">Online Banking (FPX)</span>
                         </label>
                     </div>
                 </div>
@@ -200,13 +213,15 @@
             </form>
         </section>
 
-        <!-- ADMIN PAGE -->
         <section id="adminPage" class="page-section hidden px-6 py-12 max-w-4xl mx-auto">
-            <h2 class="text-3xl font-oswald font-bold uppercase mb-8 text-red-500">Admin Panel</h2>
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-oswald font-bold uppercase text-red-500">Admin Panel</h2>
+                <button onclick="handleAuthClick()" class="text-gray-500 hover:text-white text-sm underline">Log Out</button>
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="bg-zinc-900 p-6 border border-zinc-800">
-                    <h3 class="font-oswald text-xl mb-4">Add New Product</h3>
+                    <h3 class="font-oswald text-xl mb-4 text-white">Add Item</h3>
                     <form id="adminForm" onsubmit="addProduct(event)" class="space-y-4">
                         <div>
                             <label class="block text-xs text-gray-500 mb-1">Product Name</label>
@@ -231,7 +246,7 @@
                 </div>
 
                 <div class="md:col-span-2 bg-zinc-900 p-6 border border-zinc-800 overflow-x-auto">
-                    <h3 class="font-oswald text-xl mb-4">Current Inventory</h3>
+                    <h3 class="font-oswald text-xl mb-4 text-white">Inventory</h3>
                     <table class="w-full text-sm text-left text-gray-400">
                         <thead class="text-xs text-gray-500 uppercase bg-black">
                             <tr>
@@ -240,7 +255,8 @@
                                 <th class="p-3 text-right">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="adminTableBody"></tbody>
+                        <tbody id="adminTableBody">
+                            </tbody>
                     </table>
                 </div>
             </div>
@@ -250,10 +266,8 @@
 
     <footer class="bg-black border-t border-zinc-800 py-8 text-center text-zinc-600 text-sm">
         <p>&copy; 2025 Kopi Jalanan. Bandar Tasik Puteri, Rawang.</p>
-        <p class="mt-2">Student Project Prototype.</p>
     </footer>
 
-    <!-- External JS -->
     <script type="module" src="script.js"></script>
 
 </body>

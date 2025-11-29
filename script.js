@@ -35,7 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
     onSnapshot(productsRef, (snapshot) => {
         products = [];
         snapshot.forEach((doc) => {
-            // FIX: Ensure ID is always attached
             products.push({ ...doc.data(), id: doc.id });
         });
         renderMenu();
@@ -49,11 +48,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// --- 5. CATEGORY FILTER ---
-window.filterMenu = function(category) {
+// --- 5. CATEGORY FILTER (FIXED DEFINITION) ---
+function filterMenu(category) {
     activeCategory = category;
     renderMenu();
-};
+}
 
 // --- 6. AUTH FUNCTIONS ---
 
@@ -73,38 +72,38 @@ function updateNavUI(user) {
     }
 }
 
-window.handleAuthClick = function() {
+function handleAuthClick() {
     currentUser ? signOut(auth).then(() => showPage('homePage')) : showPage('authPage');
-};
+}
 
-window.handleLogin = function(e) {
+function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const pass = document.getElementById('loginPass').value;
     signInWithEmailAndPassword(auth, email, pass)
         .then(() => showPage('homePage'))
         .catch(err => alert("Login Error: " + err.message));
-};
+}
 
-window.handleSignUp = function(e) {
+function handleSignUp(e) {
     e.preventDefault();
     const email = document.getElementById('signupEmail').value;
     const pass = document.getElementById('signupPass').value;
     createUserWithEmailAndPassword(auth, email, pass)
         .then(() => showPage('homePage'))
         .catch(err => alert("Signup Error: " + err.message));
-};
+}
 
 // --- 7. DATABASE FUNCTIONS ---
 
-window.addProduct = async function(event) {
+async function addProduct(event) {
     event.preventDefault();
     if (!currentUser || currentUser.email !== ADMIN_EMAIL) return alert("Admins Only!");
 
     const name = document.getElementById('prodName').value;
     const price = parseFloat(document.getElementById('prodPrice').value);
     const desc = document.getElementById('prodDesc').value;
-    const category = document.getElementById('prodCat').value; // Get Category
+    const category = document.getElementById('prodCat').value; 
     const imgUrl = document.getElementById('prodImg').value || 'https://placehold.co/400x300/2c2c2c/FFAE00';
     const newId = name.toLowerCase().replace(/ /g, '-');
 
@@ -118,17 +117,17 @@ window.addProduct = async function(event) {
     } catch (error) {
         alert("Error: " + error.message);
     }
-};
+}
 
-window.deleteProduct = async function(id) {
+async function deleteProduct(id) {
     if (!currentUser || currentUser.email !== ADMIN_EMAIL) return alert("Admins Only!");
     if (!confirm("Delete this item?")) return;
     try { await deleteDoc(doc(db, "products", id)); } catch (error) { console.error(error); }
-};
+}
 
 // --- 8. UI RENDER FUNCTIONS ---
 
-window.renderMenu = function() {
+function renderMenu() {
     const grid = document.getElementById('menuGrid');
     if(!grid) return;
     grid.innerHTML = '';
@@ -158,9 +157,9 @@ window.renderMenu = function() {
                 </div>
             </div>`;
     });
-};
+}
 
-window.renderAdminTable = function() {
+function renderAdminTable() {
     const tbody = document.getElementById('adminTableBody');
     if(!tbody) return;
     tbody.innerHTML = '';
@@ -172,9 +171,9 @@ window.renderAdminTable = function() {
                 <td class="p-3 text-right"><button onclick="deleteProduct('${prod.id}')" class="text-red-500"><i class="fas fa-trash"></i></button></td>
             </tr>`;
     });
-};
+}
 
-window.viewDetail = function(id) {
+function viewDetail(id) {
     const prod = products.find(p => p.id === id);
     if (!prod) return;
     document.getElementById('detailImage').src = prod.imgUrl;
@@ -183,16 +182,16 @@ window.viewDetail = function(id) {
     document.getElementById('detailDesc').innerText = prod.desc;
     document.getElementById('detailAddBtn').onclick = () => addToCart(id);
     showPage('detailPage');
-};
+}
 
-window.addToCart = function(id) {
+function addToCart(id) {
     const prod = products.find(p => p.id === id);
     if(prod) { cart.push(prod); updateCartUI(); }
-};
+}
 
-window.removeFromCart = function(index) { cart.splice(index, 1); updateCartUI(); };
+function removeFromCart(index) { cart.splice(index, 1); updateCartUI(); }
 
-window.updateCartUI = function() {
+function updateCartUI() {
     document.getElementById('cartCount').innerText = cart.length;
     const list = document.getElementById('cartList');
     if(!list) return;
@@ -207,23 +206,23 @@ window.updateCartUI = function() {
     }
     document.getElementById('cartTotal').innerText = `RM ${total.toFixed(2)}`;
     document.getElementById('checkoutTotal').innerText = `RM ${total.toFixed(2)}`;
-};
+}
 
-window.showPage = function(pageId) {
+function showPage(pageId) {
     document.querySelectorAll('.page-section').forEach(el => el.classList.add('hidden'));
     document.getElementById(pageId).classList.remove('hidden');
     window.scrollTo(0, 0);
-};
+}
 
-window.submitCheckout = function(e) {
+function submitCheckout(e) {
     e.preventDefault();
     alert("Checkout successful!");
     cart = [];
     updateCartUI();
     showPage('homePage');
-};
+}
 
-// EXPORTS
+// --- EXPORTS ---
 window.handleAuthClick = handleAuthClick;
 window.handleLogin = handleLogin;
 window.handleSignUp = handleSignUp;

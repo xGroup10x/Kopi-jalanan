@@ -34,9 +34,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const productsRef = collection(db, "products");
     onSnapshot(productsRef, (snapshot) => {
         products = [];
-        snapshot.forEach((doc) => products.push(doc.data()));
+        snapshot.forEach((doc) => {
+            // FIX: Combine the data with the Document ID safely
+            products.push({ ...doc.data(), id: doc.id });
+        });
         
-        // Refresh the UI whenever database changes
         renderMenu();
         renderAdminTable();
     });
@@ -304,3 +306,4 @@ window.addToCart = addToCart;
 window.removeFromCart = removeFromCart;
 window.showPage = showPage;
 window.submitCheckout = submitCheckout;
+

@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kopi Jalanan | Fuel for the Hustle</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -16,6 +20,7 @@
         <div class="text-2xl font-oswald font-bold tracking-wider text-white cursor-pointer" onclick="showPage('homePage')">
             KOPI JALANAN<span class="text-street-yellow">.</span>
         </div>
+        
         <div class="flex items-center gap-6">
             <button onclick="showPage('homePage')" class="hidden md:block text-sm uppercase tracking-widest hover:text-street-yellow transition">Home</button>
             <button onclick="showPage('menuPage')" class="text-sm uppercase tracking-widest hover:text-street-yellow transition">Menu</button>
@@ -77,7 +82,7 @@
             
             <div class="bg-zinc-900 p-8 border border-zinc-800 shadow-xl">
                 <h3 class="text-xl font-oswald mb-4 text-street-yellow">Log In</h3>
-                <p class="text-gray-500 text-xs mb-4">Enter admin credentials.</p>
+                <p class="text-gray-500 text-xs mb-4">Enter your admin credentials to manage the menu.</p>
                 <form onsubmit="handleLogin(event)" class="space-y-4">
                     <input type="email" id="loginEmail" placeholder="Email" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
                     <input type="password" id="loginPass" placeholder="Password" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
@@ -86,12 +91,15 @@
                     </button>
                 </form>
             </div>
-            
+
             <div class="hidden mt-8 bg-zinc-900 p-8 border border-zinc-800 opacity-50">
-                <form onsubmit="handleSignUp(event)">
-                    <input type="email" id="signupEmail" class="w-full bg-black border border-zinc-700 p-3 text-white">
-                    <input type="password" id="signupPass" class="w-full bg-black border border-zinc-700 p-3 text-white">
-                    <button type="submit">Sign Up</button>
+                <h3 class="text-xl font-oswald mb-4 text-white">Create Account</h3>
+                <form onsubmit="handleSignUp(event)" class="space-y-4">
+                    <input type="email" id="signupEmail" placeholder="Email" class="w-full bg-black border border-zinc-700 p-3 text-white">
+                    <input type="password" id="signupPass" placeholder="Password" class="w-full bg-black border border-zinc-700 p-3 text-white">
+                    <button type="submit" class="w-full bg-zinc-700 text-white font-bold py-3 uppercase tracking-widest">
+                        Sign Up
+                    </button>
                 </form>
             </div>
         </section>
@@ -103,9 +111,9 @@
             </div>
 
             <div class="flex justify-center gap-6 mb-8 text-sm text-gray-500 font-bold uppercase tracking-widest">
-                <button onclick="filterMenu('all')" class="hover:text-street-yellow focus:text-street-yellow transition">All</button>
-                <button onclick="filterMenu('coffee')" class="hover:text-street-yellow focus:text-street-yellow transition">Coffee</button>
-                <button onclick="filterMenu('dessert')" class="hover:text-street-yellow focus:text-street-yellow transition">Dessert</button>
+                <button onclick="filterMenu('all')" class="cursor-pointer hover:text-street-yellow focus:text-street-yellow transition">All</button>
+                <button onclick="filterMenu('coffee')" class="cursor-pointer hover:text-street-yellow focus:text-street-yellow transition">Coffee</button>
+                <button onclick="filterMenu('dessert')" class="cursor-pointer hover:text-street-yellow focus:text-street-yellow transition">Dessert</button>
             </div>
 
             <div id="menuGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -117,20 +125,23 @@
             <button onclick="showPage('menuPage')" class="mb-6 text-gray-400 hover:text-white flex items-center gap-2">
                 <i class="fas fa-arrow-left"></i> Back to Menu
             </button>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                 <div class="h-96 bg-zinc-800 border border-zinc-700">
                     <img id="detailImage" src="" class="w-full h-full object-cover">
                 </div>
+
                 <div class="flex flex-col justify-center">
                     <h2 id="detailName" class="text-4xl font-oswald font-bold uppercase mb-2">Product Name</h2>
                     <div id="detailPrice" class="text-2xl text-street-yellow font-bold mb-6">RM 0.00</div>
                     <p id="detailDesc" class="text-gray-400 mb-8 leading-relaxed">Description goes here.</p>
-                    <div class="flex gap-4">
-                        <input type="number" value="1" min="1" class="bg-black border border-zinc-600 text-white w-16 text-center p-3">
-                        <button id="detailAddBtn" class="flex-1 bg-white text-black font-bold uppercase tracking-widest hover:bg-street-yellow transition p-3">
-                            Add to Order
-                        </button>
-                    </div>
+                    
+                    <div id="detailOptions" class="mb-8 space-y-4 border-t border-zinc-800 pt-4">
+                        </div>
+
+                    <button id="detailAddBtn" class="w-full bg-white text-black font-bold uppercase tracking-widest hover:bg-street-yellow transition p-3">
+                        Add Customized Order
+                    </button>
                 </div>
             </div>
         </section>

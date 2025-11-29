@@ -1,10 +1,9 @@
 // --- 1. FIREBASE IMPORTS ---
-// We import the specific tools we need from Google's servers
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// --- 2. YOUR CONFIG (API Keys) ---
+// --- 2. YOUR CONFIG ---
 const firebaseConfig = {
   apiKey: "AIzaSyD4gnX77Hvu49WFwYl4HtJJOPk0SwRsj8s",
   authDomain: "kopi-jalanan.firebaseapp.com",
@@ -14,28 +13,29 @@ const firebaseConfig = {
   appId: "1:793785054964:web:acc8be94e1cdd38721d0a1"
 };
 
-// Initialize connection to Firebase
+// Initialize connection
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app); // Database
-const auth = getAuth(app);    // Authentication
+const db = getFirestore(app);
+const auth = getAuth(app);
 
 // --- 3. GLOBAL STATE ---
 let cart = [];
 let products = [];
-let currentUser = null; // Tracks who is currently logged in
+let currentUser = null;
 
-// ⚠️ SECURITY: The email that is allowed to see the Admin Panel
-const ADMIN_EMAIL = "admin@kopi.com"; 
+// The Admin Email
+const ADMIN_EMAIL = "kopijalanan@gmail.com"; 
 
 // --- 4. STARTUP LISTENERS ---
 document.addEventListener("DOMContentLoaded", () => {
     
-    // A. Database Listener (Real-time Menu Updates)
+    // A. Database Listener (THE FIX IS HERE)
     const productsRef = collection(db, "products");
     onSnapshot(productsRef, (snapshot) => {
         products = [];
         snapshot.forEach((doc) => {
-            // FIX: Combine the data with the Document ID safely
+            // FIX: We combine the data with the Document ID safely.
+            // This ensures Kopi O (added manually) gets an ID, so the button works.
             products.push({ ...doc.data(), id: doc.id });
         });
         
@@ -43,61 +43,53 @@ document.addEventListener("DOMContentLoaded", () => {
         renderAdminTable();
     });
 
-    // B. Auth Listener (Checks if user logs in or out)
+    // B. Auth Listener
     onAuthStateChanged(auth, (user) => {
         currentUser = user;
-        updateNavUI(user); // Update buttons based on who is logged in
+        updateNavUI(user);
     });
 });
 
-// --- 5. AUTHENTICATION FUNCTIONS ---
+// --- 5. AUTH FUNCTIONS ---
 
-// Updates the Navbar buttons (Show/Hide Admin button)
 function updateNavUI(user) {
     const adminBtn = document.getElementById('navAdminBtn');
     const authBtn = document.getElementById('navAuthBtn');
 
     if (user) {
-        // User is logged in
         authBtn.innerText = "Logout";
         authBtn.classList.replace('bg-zinc-800', 'bg-red-600');
         
-        // CHECK: Is this the Admin?
         if (user.email === ADMIN_EMAIL) {
-            adminBtn.classList.remove('hidden'); // Show Admin Button
+            adminBtn.classList.remove('hidden');
         } else {
-            adminBtn.classList.add('hidden'); // Hide Admin Button (Regular user)
+            adminBtn.classList.add('hidden');
         }
     } else {
-        // User is logged out
         authBtn.innerText = "Login";
         authBtn.classList.replace('bg-red-600', 'bg-zinc-800');
-        adminBtn.classList.add('hidden'); // Always hide admin button
+        adminBtn.classList.add('hidden');
     }
 }
 
-// Handles clicking the Login/Logout button
 window.handleAuthClick = function() {
     if (currentUser) {
-        // If logged in, then LOGOUT
         signOut(auth).then(() => {
             alert("Logged out successfully!");
             showPage('homePage');
         });
     } else {
-        // If logged out, go to LOGIN PAGE
         showPage('authPage');
     }
 };
 
-// Logic for Logging In
 window.handleLogin = function(e) {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const pass = document.getElementById('loginPass').value;
 
     signInWithEmailAndPassword(auth, email, pass)
-        .then((userCredential) => {
+        .then(() => {
             alert("Welcome back!");
             showPage('homePage');
         })
@@ -106,15 +98,14 @@ window.handleLogin = function(e) {
         });
 };
 
-// Logic for Signing Up
 window.handleSignUp = function(e) {
     e.preventDefault();
     const email = document.getElementById('signupEmail').value;
     const pass = document.getElementById('signupPass').value;
 
     createUserWithEmailAndPassword(auth, email, pass)
-        .then((userCredential) => {
-            alert("Account created! You are now logged in.");
+        .then(() => {
+            alert("Account created!");
             showPage('homePage');
         })
         .catch((error) => {
@@ -122,15 +113,11 @@ window.handleSignUp = function(e) {
         });
 };
 
-// --- 6. DATABASE FUNCTIONS (Admin Only) ---
+// --- 6. DATABASE FUNCTIONS ---
 
-// Add Product
 window.addProduct = async function(event) {
     event.preventDefault();
-    // Security Check: Is the current user the Admin?
-    if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
-        return alert("Security Alert: Only Admins can add items.");
-    }
+    if (!currentUser || currentUser.email !== ADMIN_EMAIL) return alert("Admins Only!");
 
     const name = document.getElementById('prodName').value;
     const price = parseFloat(document.getElementById('prodPrice').value);
@@ -143,39 +130,33 @@ window.addProduct = async function(event) {
             id: newId, name, price, desc, imgUrl,
             createdAt: new Date().toISOString()
         });
-        alert('Product Saved to Database!');
+        alert('Product Saved!');
         document.getElementById('adminForm').reset();
     } catch (error) {
-        alert("Error saving: " + error.message);
+        alert("Error: " + error.message);
     }
 };
 
-// Delete Product
 window.deleteProduct = async function(id) {
-    // Security Check
-    if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
-        return alert("Security Alert: Only Admins can delete items.");
-    }
-    if (!confirm("Delete this item permanently?")) return;
+    if (!currentUser || currentUser.email !== ADMIN_EMAIL) return alert("Admins Only!");
+    if (!confirm("Delete this item?")) return;
 
     try {
         await deleteDoc(doc(db, "products", id));
     } catch (error) {
         console.error(error);
-        alert("Error deleting item.");
     }
 };
 
-// --- 7. UI HELPER FUNCTIONS ---
+// --- 7. UI FUNCTIONS ---
 
-// Render Menu Grid
 window.renderMenu = function() {
     const grid = document.getElementById('menuGrid');
     if(!grid) return;
     grid.innerHTML = '';
     
     if (products.length === 0) {
-        grid.innerHTML = '<p class="col-span-full text-center text-gray-500">No items available.</p>';
+        grid.innerHTML = '<p class="col-span-full text-center text-gray-500">Loading...</p>';
         return;
     }
     
@@ -196,25 +177,22 @@ window.renderMenu = function() {
     });
 };
 
-// Render Admin Table
 window.renderAdminTable = function() {
     const tbody = document.getElementById('adminTableBody');
     if(!tbody) return;
     tbody.innerHTML = '';
-    
     products.forEach(prod => {
         tbody.innerHTML += `
             <tr class="border-b border-zinc-700">
                 <td class="p-3">${prod.name}</td>
                 <td class="p-3">RM ${prod.price.toFixed(2)}</td>
                 <td class="p-3 text-right">
-                    <button onclick="deleteProduct('${prod.id}')" class="text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
+                    <button onclick="deleteProduct('${prod.id}')" class="text-red-500"><i class="fas fa-trash"></i></button>
                 </td>
             </tr>`;
     });
 };
 
-// View Detail Overlay
 window.viewDetail = function(id) {
     const prod = products.find(p => p.id === id);
     if (!prod) return;
@@ -224,13 +202,15 @@ window.viewDetail = function(id) {
     document.getElementById('detailPrice').innerText = `RM ${prod.price.toFixed(2)}`;
     document.getElementById('detailDesc').innerText = prod.desc;
     document.getElementById('detailAddBtn').onclick = () => addToCart(id);
-    
     showPage('detailPage');
 };
 
-// --- CART LOGIC ---
 window.addToCart = function(id) {
     const prod = products.find(p => p.id === id);
+    if (!prod) {
+        console.error("Product not found:", id);
+        return;
+    }
     cart.push(prod);
     updateCartUI();
 };
@@ -244,12 +224,11 @@ window.updateCartUI = function() {
     document.getElementById('cartCount').innerText = cart.length;
     const list = document.getElementById('cartList');
     if(!list) return;
-    
     list.innerHTML = '';
     let total = 0;
     
-    if (cart.length === 0) { 
-        list.innerHTML = '<p class="text-gray-500">Your basket is empty.</p>'; 
+    if (cart.length === 0) {
+        list.innerHTML = '<p class="text-gray-500">Your basket is empty.</p>';
     } else {
         cart.forEach((item, index) => {
             total += item.price;
@@ -268,31 +247,21 @@ window.updateCartUI = function() {
     document.getElementById('checkoutTotal').innerText = `RM ${total.toFixed(2)}`;
 };
 
-// --- NAVIGATION ---
 window.showPage = function(pageId) {
-    // Hide all pages
     document.querySelectorAll('.page-section').forEach(el => el.classList.add('hidden'));
-    
-    // Show requested page
-    const page = document.getElementById(pageId);
-    if(page) page.classList.remove('hidden');
-    
+    document.getElementById(pageId).classList.remove('hidden');
     window.scrollTo(0, 0);
 };
 
 window.submitCheckout = function(e) {
     e.preventDefault();
-    if(cart.length === 0) return alert("Cart is empty!");
-    
-    alert("Checkout successful! (This is a prototype).");
+    alert("Checkout successful! (Prototype only)");
     cart = [];
     updateCartUI();
     showPage('homePage');
 };
 
-// --- EXPORTS ---
-// Required because type="module" makes functions private by default.
-// We attach them to 'window' so HTML onclick="" can find them.
+// --- EXPORT FUNCTIONS (Crucial for buttons to work) ---
 window.handleAuthClick = handleAuthClick;
 window.handleLogin = handleLogin;
 window.handleSignUp = handleSignUp;
@@ -306,4 +275,3 @@ window.addToCart = addToCart;
 window.removeFromCart = removeFromCart;
 window.showPage = showPage;
 window.submitCheckout = submitCheckout;
-

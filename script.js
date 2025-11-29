@@ -35,15 +35,19 @@ const ADMIN_EMAIL = "kopijalanan@gmail.com";
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     
-    // A. Listen for Real-Time Database Changes
+  
+    // A. Database Listener (Real-time Menu Updates)
     const productsRef = collection(db, "products");
     onSnapshot(productsRef, (snapshot) => {
         products = [];
-        snapshot.forEach((doc) => products.push(doc.data()));
+        snapshot.forEach((doc) => {
+            // FIX: Combine the data with the Document ID safely
+            products.push({ ...doc.data(), id: doc.id });
+        });
         
-        // Refresh UI components when data changes
         renderMenu();
         renderAdminTable();
+    });
         console.log("Database updated: ", products.length, " items.");
     });
 
@@ -369,3 +373,4 @@ window.addToCart = addToCart;
 window.removeFromCart = removeFromCart;
 window.showPage = showPage;
 window.submitCheckout = submitCheckout;
+

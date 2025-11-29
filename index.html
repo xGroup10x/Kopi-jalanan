@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kopi Jalanan | Fuel for the Hustle</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -20,7 +16,6 @@
         <div class="text-2xl font-oswald font-bold tracking-wider text-white cursor-pointer" onclick="showPage('homePage')">
             KOPI JALANAN<span class="text-street-yellow">.</span>
         </div>
-        
         <div class="flex items-center gap-6">
             <button onclick="showPage('homePage')" class="hidden md:block text-sm uppercase tracking-widest hover:text-street-yellow transition">Home</button>
             <button onclick="showPage('menuPage')" class="text-sm uppercase tracking-widest hover:text-street-yellow transition">Menu</button>
@@ -77,30 +72,34 @@
             </div>
         </section>
 
-        <section id="authPage" class="page-section hidden px-6 py-12 max-w-md mx-auto">
-            <h2 class="text-3xl font-oswald font-bold uppercase mb-8 text-center">Admin Access</h2>
+        <section id="authPage" class="page-section hidden px-6 py-12 max-w-4xl mx-auto">
+            <h2 class="text-3xl font-oswald font-bold uppercase mb-8 text-center">Join the Club</h2>
             
-            <div class="bg-zinc-900 p-8 border border-zinc-800 shadow-xl">
-                <h3 class="text-xl font-oswald mb-4 text-street-yellow">Log In</h3>
-                <p class="text-gray-500 text-xs mb-4">Enter your admin credentials to manage the menu.</p>
-                <form onsubmit="handleLogin(event)" class="space-y-4">
-                    <input type="email" id="loginEmail" placeholder="Email" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
-                    <input type="password" id="loginPass" placeholder="Password" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
-                    <button type="submit" class="w-full bg-white text-black font-bold py-3 uppercase tracking-widest hover:bg-street-yellow transition">
-                        Log In
-                    </button>
-                </form>
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-zinc-900 p-8 border border-zinc-800 shadow-xl">
+                    <h3 class="text-xl font-oswald mb-4 text-street-yellow">Log In</h3>
+                    <p class="text-gray-500 text-xs mb-4">Welcome back, hustler.</p>
+                    <form onsubmit="handleLogin(event)" class="space-y-4">
+                        <input type="email" id="loginEmail" placeholder="Email" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
+                        <input type="password" id="loginPass" placeholder="Password" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
+                        <button type="submit" class="w-full bg-white text-black font-bold py-3 uppercase tracking-widest hover:bg-street-yellow transition">
+                            Log In
+                        </button>
+                    </form>
+                </div>
 
-            <div class="hidden mt-8 bg-zinc-900 p-8 border border-zinc-800 opacity-50">
-                <h3 class="text-xl font-oswald mb-4 text-white">Create Account</h3>
-                <form onsubmit="handleSignUp(event)" class="space-y-4">
-                    <input type="email" id="signupEmail" placeholder="Email" class="w-full bg-black border border-zinc-700 p-3 text-white">
-                    <input type="password" id="signupPass" placeholder="Password" class="w-full bg-black border border-zinc-700 p-3 text-white">
-                    <button type="submit" class="w-full bg-zinc-700 text-white font-bold py-3 uppercase tracking-widest">
-                        Sign Up
-                    </button>
-                </form>
+                <div class="bg-zinc-900 p-8 border border-zinc-800 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-street-yellow text-black text-xs font-bold px-3 py-1">NEW?</div>
+                    <h3 class="text-xl font-oswald mb-4 text-white">Create Account</h3>
+                    <p class="text-gray-500 text-xs mb-4">First time here? Sign up to order.</p>
+                    <form onsubmit="handleSignUp(event)" class="space-y-4">
+                        <input type="email" id="signupEmail" placeholder="Email" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
+                        <input type="password" id="signupPass" placeholder="Password" required class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none transition">
+                        <button type="submit" class="w-full bg-zinc-700 text-white font-bold py-3 uppercase tracking-widest hover:bg-white hover:text-black transition">
+                            Sign Up
+                        </button>
+                    </form>
+                </div>
             </div>
         </section>
 
@@ -127,21 +126,16 @@
             </button>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-                
                 <div class="h-[500px] bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden p-8 flex items-center justify-center">
                     <img id="detailImage" src="" class="w-full h-full object-contain drop-shadow-2xl">
                 </div>
-
                 <div class="flex flex-col">
                     <div class="mb-8">
                         <h2 id="detailName" class="text-4xl font-oswald font-bold uppercase mb-2 text-white">Product Name</h2>
                         <p id="detailDesc" class="text-gray-400 text-sm mb-4 leading-relaxed">Description goes here.</p>
                         <div id="detailPrice" class="text-3xl text-street-yellow font-bold">RM 0.00</div>
                     </div>
-                    
-                    <div id="detailOptions" class="space-y-8 mb-8">
-                        </div>
-
+                    <div id="detailOptions" class="space-y-8 mb-8"></div>
                     <button id="detailAddBtn" class="w-full bg-street-yellow text-black font-bold text-lg uppercase tracking-widest hover:bg-white transition py-4 rounded-xl shadow-lg shadow-yellow-900/20">
                         Add to Billing
                     </button>
@@ -149,27 +143,49 @@
             </div>
         </section>
 
-        <section id="cartPage" class="page-section hidden px-6 py-12 max-w-3xl mx-auto">
+        <section id="cartPage" class="page-section hidden px-6 py-12 max-w-4xl mx-auto">
             <h2 class="text-3xl font-oswald font-bold uppercase mb-8">Your Cart</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="md:col-span-2 bg-zinc-900 p-6 border border-zinc-800">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                
+                <div class="bg-zinc-900 p-6 border border-zinc-800 h-fit">
+                    <h3 class="font-oswald text-xl mb-4 text-gray-400">Order Items</h3>
                     <div id="cartList" class="space-y-4">
                         <p class="text-gray-500">Empty</p>
                     </div>
                 </div>
-                <div class="bg-zinc-800 p-6 h-fit">
-                    <h3 class="font-oswald text-xl mb-4">Summary</h3>
-                    <div class="flex justify-between mb-2 text-gray-400">
-                        <span>Subtotal</span>
-                        <span id="cartTotal">RM 0.00</span>
+
+                <div class="space-y-6">
+                    <div class="bg-zinc-900 p-6 border border-zinc-800">
+                        <h3 class="font-oswald text-xl mb-4 text-white">Delivery Details</h3>
+                        <form id="checkoutForm" class="space-y-4">
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">Your Name</label>
+                                <input type="text" id="custName" placeholder="e.g. Ali Baba" class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">Phone Number</label>
+                                <input type="tel" id="custPhone" placeholder="012-3456789" class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">Delivery Address</label>
+                                <textarea id="custAddress" rows="3" placeholder="Block A, Room 123..." class="w-full bg-black border border-zinc-700 p-3 text-white focus:border-street-yellow outline-none"></textarea>
+                            </div>
+                        </form>
                     </div>
-                    <div class="flex justify-between mb-6 text-gray-400">
-                        <span>Total</span>
-                        <span id="checkoutTotal">RM 0.00</span>
+
+                    <div class="bg-zinc-800 p-6">
+                        <div class="flex justify-between mb-2 text-gray-400">
+                            <span>Subtotal</span>
+                            <span id="cartTotal">RM 0.00</span>
+                        </div>
+                        <div class="flex justify-between mb-6 text-white text-xl font-bold">
+                            <span>Total</span>
+                            <span id="checkoutTotal">RM 0.00</span>
+                        </div>
+                        <button onclick="submitCheckout(event)" class="w-full bg-street-yellow text-black font-bold py-4 uppercase tracking-widest hover:bg-white transition shadow-lg shadow-yellow-900/20">
+                            Confirm Order
+                        </button>
                     </div>
-                    <button onclick="submitCheckout(event)" class="w-full bg-street-yellow text-black font-bold py-3 uppercase tracking-widest hover:bg-white transition">
-                        Checkout
-                    </button>
                 </div>
             </div>
         </section>
@@ -192,12 +208,10 @@
                             <label class="block text-xs text-gray-500 mb-1">Price (RM)</label>
                             <input type="number" id="prodPrice" step="0.01" required class="w-full bg-black border border-zinc-700 p-2 text-white">
                         </div>
-                        
                         <div>
                             <label class="block text-xs text-gray-500 mb-1">Stock Quantity</label>
-                            <input type="number" id="prodStock" required class="w-full bg-black border border-zinc-700 p-2 text-white focus:border-street-yellow outline-none">
+                            <input type="number" id="prodStock" required class="w-full bg-black border border-zinc-700 p-2 text-white">
                         </div>
-
                         <div>
                             <label class="block text-xs text-gray-500 mb-1">Category</label>
                             <select id="prodCat" class="w-full bg-black border border-zinc-700 p-2 text-white">
@@ -205,7 +219,6 @@
                                 <option value="dessert">Dessert</option>
                             </select>
                         </div>
-
                         <div>
                             <label class="block text-xs text-gray-500 mb-1">Description</label>
                             <textarea id="prodDesc" required rows="2" class="w-full bg-black border border-zinc-700 p-2 text-white"></textarea>

@@ -17,6 +17,7 @@
             KOPI JALANAN<span class="text-street-yellow">.</span>
         </div>
         <div class="flex items-center gap-6">
+            <button onclick="showPage('aboutPage')" class="hidden md:block text-sm uppercase tracking-widest hover:text-street-yellow transition">About</button>
             <button onclick="showPage('homePage')" class="hidden md:block text-sm uppercase tracking-widest hover:text-street-yellow transition">Home</button>
             <button onclick="showPage('menuPage')" class="text-sm uppercase tracking-widest hover:text-street-yellow transition">Menu</button>
             
@@ -36,6 +37,47 @@
     </nav>
 
     <main class="flex-grow">
+
+        <section id="aboutPage" class="page-section hidden px-6 py-12 max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-oswald font-bold uppercase mb-2">Our Story: <span class="text-street-yellow">The Street Brew</span></h2>
+                <div class="w-24 h-1 bg-street-yellow mx-auto"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 items-center">
+                <div class="md:col-span-2 space-y-6 text-gray-400">
+                    <p>
+                        **Kopi Jalanan** was born from a simple idea: that premium coffee shouldn't come with a premium price tag. Tired of expensive cafe lattes that drain your wallet, our founders set out to create a high-quality, authentic brew that is accessible to everyone on the hustle.
+                    </p>
+                    <p>
+                        We use a robust blend of 100% Arabica and Robusta beans, sourced responsibly to ensure a powerful, full-bodied flavour. Our mission is to be the reliable fuel for students, freelancers, and night-shift workers—anyone who needs that kick to keep going. We're about speed, quality, and community.
+                    </p>
+                    <ul class="list-disc list-inside space-y-2 ml-4">
+                        <li>**Quality First:** Real beans, real taste.</li>
+                        <li>**Street Prices:** Affordable for every budget.</li>
+                        <li>**Fast Pickup:** Order online, grab and go.</li>
+                    </ul>
+                    <button onclick="showPage('menuPage')" class="bg-zinc-800 text-white font-bold py-3 px-6 mt-4 uppercase tracking-widest hover:bg-street-yellow hover:text-black transition">
+                        See Our Brews
+                    </button>
+                    
+                    <div class="pt-6 border-t border-zinc-800 flex gap-4 items-center">
+                        <span class="text-sm font-bold uppercase text-white">Follow Us:</span>
+                        <a href="https://www.instagram.com/thekopijalanan?igsh=bDdjN3lmdzc0N3Zy" target="_blank" class="text-2xl text-gray-500 hover:text-street-yellow transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.tiktok.com/@thekopijalanan?_r=1&_t=ZS-91sLNRpi8wu" target="_blank" class="text-2xl text-gray-500 hover:text-street-yellow transition">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                    </div>
+                    </div>
+                <div class="hidden md:block p-8 border border-zinc-800 bg-zinc-900 rounded-lg shadow-xl text-center">
+                    <i class="fas fa-location-dot text-6xl text-street-yellow mb-4"></i>
+                    <h3 class="font-oswald text-xl mb-2">Our Location</h3>
+                    <p class="text-gray-500 text-sm">Find us at Bandar Tasik Puteri, the heart of the hustle!</p>
+                </div>
+            </div>
+        </section>
 
         <section id="homePage" class="page-section block">
             <div class="relative h-[70vh] flex items-center justify-center bg-[url('https://media1.tenor.com/m/ILkf7SIxqyUAAAAC/cappuccino-coffee.gif')] bg-cover bg-center bg-no-repeat">

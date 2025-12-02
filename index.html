@@ -12,30 +12,29 @@
 
 <body class="min-h-screen flex flex-col">
 
-    <nav class="sticky top-0 z-50 bg-black border-b border-zinc-800 px-6 py-4 flex justify-between items-center">
-        <div class="text-2xl font-oswald font-bold tracking-wider text-white cursor-pointer" onclick="showPage('homePage')">
-            KOPI JALANAN<span class="text-street-yellow">.</span>
-        </div>
-        <div class="flex items-center gap-6">
-            <button onclick="showPage('aboutPage')" class="hidden md:block text-sm uppercase tracking-widest hover:text-street-yellow transition">About</button>
-            <button onclick="showPage('homePage')" class="hidden md:block text-sm uppercase tracking-widest hover:text-street-yellow transition">Home</button>
-            <button onclick="showPage('menuPage')" class="text-sm uppercase tracking-widest hover:text-street-yellow transition">Menu</button>
-            
-            <button onclick="showPage('cartPage')" class="relative text-xl hover:text-street-yellow transition">
-                <i class="fas fa-shopping-bag"></i>
-                <span id="cartCount" class="absolute -top-2 -right-2 bg-street-yellow text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
-            </button>
+   <nav class="sticky top-0 z-50 bg-black border-b border-zinc-800 px-6 py-4 flex justify-between items-center">
+    <div class="text-2xl font-oswald font-bold tracking-wider text-white cursor-pointer" onclick="showPage('homePage')">
+        KOPI JALANAN<span class="text-street-yellow">.</span>
+    </div>
+    <div class="flex items-center gap-6">
+        <button onclick="showPage('aboutPage')" class="text-sm uppercase tracking-widest hover:text-street-yellow transition">About</button>
+        <button onclick="showPage('homePage')" class="text-sm uppercase tracking-widest hover:text-street-yellow transition">Home</button>
+        <button onclick="showPage('menuPage')" class="text-sm uppercase tracking-widest hover:text-street-yellow transition">Menu</button>
+        
+        <button onclick="showPage('cartPage')" class="relative text-xl hover:text-street-yellow transition">
+            <i class="fas fa-shopping-bag"></i>
+            <span id="cartCount" class="absolute -top-2 -right-2 bg-street-yellow text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+        </button>
 
-            <button id="navAdminBtn" onclick="showPage('adminPage')" class="hidden text-red-500 hover:text-red-400 text-xs uppercase border border-red-900 px-2 py-1 rounded">
-                Admin Panel
-            </button>
+        <button id="navAdminBtn" onclick="showPage('adminPage')" class="hidden text-red-500 hover:text-red-400 text-xs uppercase border border-red-900 px-2 py-1 rounded">
+            Admin Panel
+        </button>
 
-            <button id="navAuthBtn" onclick="handleAuthClick()" class="bg-zinc-800 text-white px-4 py-2 text-xs uppercase font-bold tracking-widest hover:bg-zinc-700 transition">
-                Login
-            </button>
-        </div>
-    </nav>
-
+        <button id="navAuthBtn" onclick="handleAuthClick()" class="bg-zinc-800 text-white px-4 py-2 text-xs uppercase font-bold tracking-widest hover:bg-zinc-700 transition">
+            Login
+        </button>
+    </div>
+</nav>
     <main class="flex-grow">
 
         <section id="aboutPage" class="page-section hidden px-6 py-12 max-w-7xl mx-auto">
@@ -47,15 +46,15 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10 items-center">
                 <div class="md:col-span-2 space-y-6 text-gray-400">
                     <p>
-                        **Kopi Jalanan** was born from a simple idea: that premium coffee shouldn't come with a premium price tag. Tired of expensive cafe lattes that drain your wallet, our founders set out to create a high-quality, authentic brew that is accessible to everyone on the hustle.
+                        "Kopi Jalanan" was born from a simple idea: that premium coffee shouldn't come with a premium price tag. Tired of expensive cafe lattes that drain your wallet, our founders set out to create a high-quality, authentic brew that is accessible to everyone on the hustle.
                     </p>
                     <p>
                         We use a robust blend of 100% Arabica and Robusta beans, sourced responsibly to ensure a powerful, full-bodied flavour. Our mission is to be the reliable fuel for students, freelancers, and night-shift workers—anyone who needs that kick to keep going. We're about speed, quality, and community.
                     </p>
                     <ul class="list-disc list-inside space-y-2 ml-4">
-                        <li>**Quality First:** Real beans, real taste.</li>
-                        <li>**Street Prices:** Affordable for every budget.</li>
-                        <li>**Fast Pickup:** Order online, grab and go.</li>
+                        <li>Quality First : Real beans, real taste.</li>
+                        <li>Street Prices : Affordable for every budget.</li>
+                        <li>Fast Pickup : Order online, grab and go.</li>
                     </ul>
                     <button onclick="showPage('menuPage')" class="bg-zinc-800 text-white font-bold py-3 px-6 mt-4 uppercase tracking-widest hover:bg-street-yellow hover:text-black transition">
                         See Our Brews

@@ -12,55 +12,56 @@
 
 <body class="min-h-screen flex flex-col">
 
-   <nav class="sticky top-0 z-50 bg-black border-b border-zinc-800 px-6 py-4 flex justify-between items-center">
-    <div class="text-2xl font-oswald font-bold tracking-wider text-white cursor-pointer" onclick="showPage('homePage')">
-        KOPI JALANAN<span class="text-street-yellow">.</span>
-    </div>
-    <div class="flex items-center gap-6">
-        <button onclick="showPage('aboutPage')" class="text-sm uppercase tracking-widest hover:text-street-yellow transition">About</button>
-        <button onclick="showPage('homePage')" class="text-sm uppercase tracking-widest hover:text-street-yellow transition">Home</button>
-        <button onclick="showPage('menuPage')" class="text-sm uppercase tracking-widest hover:text-street-yellow transition">Menu</button>
-        
-        <button onclick="showPage('cartPage')" class="relative text-xl hover:text-street-yellow transition">
-            <i class="fas fa-shopping-bag"></i>
-            <span id="cartCount" class="absolute -top-2 -right-2 bg-street-yellow text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
-        </button>
+    <nav class="sticky top-0 z-50 bg-black border-b border-zinc-800 px-4 sm:px-6 py-4 flex justify-between items-center">
+        <div class="text-xl sm:text-2xl font-oswald font-bold tracking-wider text-white cursor-pointer" onclick="showPage('homePage')">
+            KOPI JALANAN<span class="text-street-yellow">.</span>
+        </div>
+        <div class="flex items-center gap-3 sm:gap-6">
+            <button onclick="showPage('aboutPage')" class="text-xs sm:text-sm uppercase tracking-widest hover:text-street-yellow transition">About</button>
+            <button onclick="showPage('homePage')" class="text-xs sm:text-sm uppercase tracking-widest hover:text-street-yellow transition">Home</button>
+            <button onclick="showPage('menuPage')" class="text-xs sm:text-sm uppercase tracking-widest hover:text-street-yellow transition">Menu</button>
+            
+            <button onclick="showPage('cartPage')" class="relative text-lg sm:text-xl hover:text-street-yellow transition">
+                <i class="fas fa-shopping-bag"></i>
+                <span id="cartCount" class="absolute -top-2 -right-2 bg-street-yellow text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+            </button>
 
-        <button id="navAdminBtn" onclick="showPage('adminPage')" class="hidden text-red-500 hover:text-red-400 text-xs uppercase border border-red-900 px-2 py-1 rounded">
-            Admin Panel
-        </button>
+            <button id="navAdminBtn" onclick="showPage('adminPage')" class="hidden text-red-500 hover:text-red-400 text-xs uppercase border border-red-900 px-2 py-1 rounded">
+                Admin Panel
+            </button>
 
-        <button id="navAuthBtn" onclick="handleAuthClick()" class="bg-zinc-800 text-white px-4 py-2 text-xs uppercase font-bold tracking-widest hover:bg-zinc-700 transition">
-            Login
-        </button>
-    </div>
-</nav>
+            <button id="navAuthBtn" onclick="handleAuthClick()" class="bg-zinc-800 text-white px-2 sm:px-4 py-1 sm:py-2 text-xs uppercase font-bold tracking-widest hover:bg-zinc-700 transition">
+                Login
+            </button>
+        </div>
+    </nav>
+
     <main class="flex-grow">
 
-        <section id="aboutPage" class="page-section hidden px-6 py-12 max-w-7xl mx-auto">
-            <div class="text-center mb-12">
-                <h2 class="text-4xl font-oswald font-bold uppercase mb-2">Our Story: <span class="text-street-yellow">The Street Brew</span></h2>
+        <section id="aboutPage" class="page-section hidden px-4 sm:px-6 py-8 md:py-12 max-w-7xl mx-auto">
+            <div class="text-center mb-8 md:mb-12">
+                <h2 class="text-3xl md:text-4xl font-oswald font-bold uppercase mb-2">Our Story: <span class="text-street-yellow">The Street Brew</span></h2>
                 <div class="w-24 h-1 bg-street-yellow mx-auto"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 items-center">
-                <div class="md:col-span-2 space-y-6 text-gray-400">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 items-center">
+                <div class="md:col-span-2 space-y-4 md:space-y-6 text-gray-400">
                     <p>
-                        "Kopi Jalanan" was born from a simple idea: that premium coffee shouldn't come with a premium price tag. Tired of expensive cafe lattes that drain your wallet, our founders set out to create a high-quality, authentic brew that is accessible to everyone on the hustle.
+                        **Kopi Jalanan** was born from a simple idea: that premium coffee shouldn't come with a premium price tag. Tired of expensive cafe lattes that drain your wallet, our founders set out to create a high-quality, authentic brew that is accessible to everyone on the hustle.
                     </p>
                     <p>
                         We use a robust blend of 100% Arabica and Robusta beans, sourced responsibly to ensure a powerful, full-bodied flavour. Our mission is to be the reliable fuel for students, freelancers, and night-shift workers—anyone who needs that kick to keep going. We're about speed, quality, and community.
                     </p>
                     <ul class="list-disc list-inside space-y-2 ml-4">
-                        <li>Quality First : Real beans, real taste.</li>
-                        <li>Street Prices : Affordable for every budget.</li>
-                        <li>Fast Pickup : Order online, grab and go.</li>
+                        <li>**Quality First:** Real beans, real taste.</li>
+                        <li>**Street Prices:** Affordable for every budget.</li>
+                        <li>**Fast Pickup:** Order online, grab and go.</li>
                     </ul>
-                    <button onclick="showPage('menuPage')" class="bg-zinc-800 text-white font-bold py-3 px-6 mt-4 uppercase tracking-widest hover:bg-street-yellow hover:text-black transition">
+                    <button onclick="showPage('menuPage')" class="w-full sm:w-auto bg-zinc-800 text-white font-bold py-3 px-6 mt-4 uppercase tracking-widest hover:bg-street-yellow hover:text-black transition">
                         See Our Brews
                     </button>
                     
-                    <div class="pt-6 border-t border-zinc-800 flex gap-4 items-center">
+                    <div class="pt-4 border-t border-zinc-800 flex gap-4 items-center">
                         <span class="text-sm font-bold uppercase text-white">Follow Us:</span>
                         <a href="https://www.instagram.com/thekopijalanan?igsh=bDdjN3lmdzc0N3Zy" target="_blank" class="text-2xl text-gray-500 hover:text-street-yellow transition">
                             <i class="fab fa-instagram"></i>
@@ -69,7 +70,8 @@
                             <i class="fab fa-tiktok"></i>
                         </a>
                     </div>
-                    </div>
+                    
+                </div>
                 <div class="hidden md:block p-8 border border-zinc-800 bg-zinc-900 rounded-lg shadow-xl text-center">
                     <i class="fas fa-location-dot text-6xl text-street-yellow mb-4"></i>
                     <h3 class="font-oswald text-xl mb-2">Our Location</h3>
@@ -85,7 +87,7 @@
                     <h1 class="text-5xl md:text-7xl font-oswald font-bold text-white mb-4 uppercase">
                         Fuel for the <span class="text-street-yellow">Hustle</span>
                     </h1>
-                    <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+                    <p class="text-base md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
                         Premium street brew. Rasa Cafe, Harga Jalanan. Order online, pickup, and go.
                     </p>
                     <button onclick="showPage('menuPage')" class="bg-street-yellow text-black font-bold py-3 px-8 uppercase tracking-widest hover:bg-white transition">
@@ -95,17 +97,17 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-0 border-t border-zinc-800">
-                <div class="p-12 text-center border-b md:border-b-0 md:border-r border-zinc-800">
+                <div class="p-8 md:p-12 text-center border-b md:border-b-0 md:border-r border-zinc-800">
                     <i class="fas fa-bolt text-3xl text-street-yellow mb-4"></i>
                     <h3 class="font-oswald text-xl mb-2">Fast Pickup</h3>
                     <p class="text-gray-500 text-sm">Skip the line. Ready when you arrive.</p>
                 </div>
-                <div class="p-12 text-center border-b md:border-b-0 md:border-r border-zinc-800">
+                <div class="p-8 md:p-12 text-center border-b md:border-b-0 md:border-r border-zinc-800">
                     <i class="fas fa-mug-hot text-3xl text-street-yellow mb-4"></i>
                     <h3 class="font-oswald text-xl mb-2">Real Beans</h3>
                     <p class="text-gray-500 text-sm">100% Arabica/Robusta blend.</p>
                 </div>
-                <div class="p-12 text-center">
+                <div class="p-8 md:p-12 text-center">
                     <i class="fas fa-tag text-3xl text-street-yellow mb-4"></i>
                     <h3 class="font-oswald text-xl mb-2">Student Prices</h3>
                     <p class="text-gray-500 text-sm">Affordable caffeine for study sessions.</p>
@@ -113,7 +115,7 @@
             </div>
         </section>
 
-        <section id="authPage" class="page-section hidden px-6 py-12 max-w-4xl mx-auto">
+        <section id="authPage" class="page-section hidden px-4 sm:px-6 py-12 max-w-4xl mx-auto">
             <h2 class="text-3xl font-oswald font-bold uppercase mb-8 text-center">Join the Club</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -144,39 +146,39 @@
             </div>
         </section>
 
-        <section id="menuPage" class="page-section hidden px-6 py-12 max-w-7xl mx-auto">
+        <section id="menuPage" class="page-section hidden px-4 sm:px-6 py-10 md:py-12 max-w-7xl mx-auto">
             <div class="text-center mb-8">
                 <h2 class="text-4xl font-oswald font-bold uppercase mb-2">The Menu</h2>
                 <div class="w-20 h-1 bg-street-yellow mx-auto"></div>
             </div>
 
-            <div class="flex justify-center gap-6 mb-8 text-sm text-gray-500 font-bold uppercase tracking-widest">
+            <div class="flex justify-center gap-4 sm:gap-6 mb-8 text-xs sm:text-sm text-gray-500 font-bold uppercase tracking-widest">
                 <button onclick="filterMenu('all')" class="cursor-pointer hover:text-street-yellow focus:text-street-yellow transition">All</button>
                 <button onclick="filterMenu('coffee')" class="cursor-pointer hover:text-street-yellow focus:text-street-yellow transition">Coffee</button>
                 <button onclick="filterMenu('dessert')" class="cursor-pointer hover:text-street-yellow focus:text-street-yellow transition">Dessert</button>
             </div>
 
-            <div id="menuGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div id="menuGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                 <p class="col-span-full text-center text-gray-500">Loading brews...</p>
             </div>
         </section>
 
-        <section id="detailPage" class="page-section hidden px-6 py-12 max-w-6xl mx-auto">
+        <section id="detailPage" class="page-section hidden px-4 sm:px-6 py-12 max-w-6xl mx-auto">
             <button onclick="showPage('menuPage')" class="mb-6 text-gray-400 hover:text-white flex items-center gap-2">
                 <i class="fas fa-arrow-left"></i> Back to Menu
             </button>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-                <div class="h-[500px] bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden p-8 flex items-center justify-center">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
+                <div class="h-[300px] md:h-[500px] bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden p-4 md:p-8 flex items-center justify-center">
                     <img id="detailImage" src="" class="w-full h-full object-contain drop-shadow-2xl">
                 </div>
                 <div class="flex flex-col">
                     <div class="mb-8">
-                        <h2 id="detailName" class="text-4xl font-oswald font-bold uppercase mb-2 text-white">Product Name</h2>
+                        <h2 id="detailName" class="text-3xl md:text-4xl font-oswald font-bold uppercase mb-2 text-white">Product Name</h2>
                         <p id="detailDesc" class="text-gray-400 text-sm mb-4 leading-relaxed">Description goes here.</p>
-                        <div id="detailPrice" class="text-3xl text-street-yellow font-bold">RM 0.00</div>
+                        <div id="detailPrice" class="text-2xl md:text-3xl text-street-yellow font-bold">RM 0.00</div>
                     </div>
-                    <div id="detailOptions" class="space-y-8 mb-8"></div>
+                    <div id="detailOptions" class="space-y-6 md:space-y-8 mb-8"></div>
                     <button id="detailAddBtn" class="w-full bg-street-yellow text-black font-bold text-lg uppercase tracking-widest hover:bg-white transition py-4 rounded-xl shadow-lg shadow-yellow-900/20">
                         Add to Order
                     </button>
@@ -184,18 +186,18 @@
             </div>
         </section>
 
-        <section id="cartPage" class="page-section hidden px-6 py-12 max-w-4xl mx-auto">
+        <section id="cartPage" class="page-section hidden px-4 sm:px-6 py-12 max-w-4xl mx-auto">
             <h2 class="text-3xl font-oswald font-bold uppercase mb-8">Your Cart</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                 
-                <div class="bg-zinc-900 p-6 border border-zinc-800 h-fit">
+                <div class="bg-zinc-900 p-6 border border-zinc-800 h-fit order-2 md:order-1">
                     <h3 class="font-oswald text-xl mb-4 text-gray-400">Order Items</h3>
                     <div id="cartList" class="space-y-4">
                         <p class="text-gray-500">Empty</p>
                     </div>
                 </div>
 
-                <div class="space-y-6">
+                <div class="space-y-6 order-1 md:order-2">
                     <div class="bg-zinc-900 p-6 border border-zinc-800">
                         <h3 class="font-oswald text-xl mb-4 text-white">Delivery Details</h3>
                         <form id="checkoutForm" class="space-y-4">
@@ -231,7 +233,7 @@
             </div>
         </section>
 
-        <section id="adminPage" class="page-section hidden px-6 py-12 max-w-4xl mx-auto">
+        <section id="adminPage" class="page-section hidden px-4 sm:px-6 py-12 max-w-4xl mx-auto">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-3xl font-oswald font-bold uppercase text-red-500">Admin Panel</h2>
                 <div class="text-gray-500 text-xs">Logged in as Admin</div>

@@ -12,25 +12,42 @@
 
 <body class="min-h-screen flex flex-col">
 
-    <nav class="sticky top-0 z-50 bg-black border-b border-zinc-800 px-4 sm:px-6 py-4 flex justify-between items-center">
-        <div class="text-xl sm:text-2xl font-oswald font-bold tracking-wider text-white cursor-pointer" onclick="showPage('homePage')">
-            KOPI JALANAN<span class="text-street-yellow">.</span>
-        </div>
-        <div class="flex items-center gap-3 sm:gap-6">
-            <button onclick="showPage('aboutPage')" class="text-xs sm:text-sm uppercase tracking-widest hover:text-street-yellow transition">About</button>
-            <button onclick="showPage('homePage')" class="text-xs sm:text-sm uppercase tracking-widest hover:text-street-yellow transition">Home</button>
-            <button onclick="showPage('menuPage')" class="text-xs sm:text-sm uppercase tracking-widest hover:text-street-yellow transition">Menu</button>
+    <nav class="sticky top-0 z-50 bg-black border-b border-zinc-800 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center shadow-lg">
+        
+        <div class="flex items-center gap-3 cursor-pointer group" onclick="showPage('homePage')">
+            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-zinc-800 border border-zinc-700 overflow-hidden relative group-hover:border-street-yellow transition">
+                <img src="https://placehold.co/100x100/333/FFAE00?text=KJ" alt="Logo" class="w-full h-full object-cover">
+            </div>
             
-            <button onclick="showPage('cartPage')" class="relative text-lg sm:text-xl hover:text-street-yellow transition">
+            <div class="text-xl md:text-2xl font-oswald font-bold tracking-wider text-white group-hover:text-street-yellow transition">
+                KOPI JALANAN<span class="text-street-yellow">.</span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2 md:gap-6">
+            
+            <button onclick="showPage('homePage')" class="hidden md:block text-xs md:text-sm uppercase tracking-widest hover:text-street-yellow transition">
+                Home
+            </button>
+
+            <button onclick="showPage('menuPage')" class="text-xs md:text-sm uppercase tracking-widest hover:text-street-yellow transition">
+                Menu
+            </button>
+            
+            <button onclick="showPage('aboutPage')" class="hidden md:block text-xs md:text-sm uppercase tracking-widest hover:text-street-yellow transition">
+                About
+            </button>
+
+            <button onclick="showPage('cartPage')" class="relative text-lg md:text-xl hover:text-street-yellow transition px-2">
                 <i class="fas fa-shopping-bag"></i>
-                <span id="cartCount" class="absolute -top-2 -right-2 bg-street-yellow text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                <span id="cartCount" class="absolute -top-1 -right-1 bg-street-yellow text-black text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">0</span>
             </button>
 
-            <button id="navAdminBtn" onclick="showPage('adminPage')" class="hidden text-red-500 hover:text-red-400 text-xs uppercase border border-red-900 px-2 py-1 rounded">
-                Admin Panel
+            <button id="navAdminBtn" onclick="showPage('adminPage')" class="hidden text-red-500 hover:text-red-400 text-[10px] uppercase border border-red-900 px-2 py-1 rounded whitespace-nowrap">
+                Admin
             </button>
 
-            <button id="navAuthBtn" onclick="handleAuthClick()" class="bg-zinc-800 text-white px-2 sm:px-4 py-1 sm:py-2 text-xs uppercase font-bold tracking-widest hover:bg-zinc-700 transition">
+            <button id="navAuthBtn" onclick="handleAuthClick()" class="bg-zinc-800 text-white px-3 py-1.5 md:px-4 md:py-2 text-[10px] md:text-xs uppercase font-bold tracking-widest hover:bg-zinc-700 transition whitespace-nowrap rounded-sm">
                 Login
             </button>
         </div>
@@ -146,17 +163,22 @@
             </div>
         </section>
 
-        <section id="menuPage" class="page-section hidden px-4 sm:px-6 py-10 md:py-12 max-w-7xl mx-auto">
-            <div class="text-center mb-8">
-                <h2 class="text-4xl font-oswald font-bold uppercase mb-2">The Menu</h2>
-                <div class="w-20 h-1 bg-street-yellow mx-auto"></div>
+        <section id="menuPage" class="page-section hidden px-4 md:px-6 py-8 max-w-3xl mx-auto min-h-screen">
+            
+            <div class="sticky top-[60px] md:top-[74px] z-40 bg-[#1a1a1a] pb-4 pt-2">
+                <div class="relative flex border-b border-zinc-800">
+                    <button onclick="filterMenu('all')" id="btn-all" class="flex-1 pb-3 text-sm font-bold uppercase tracking-widest text-white hover:text-street-yellow transition-colors">All</button>
+                    <button onclick="filterMenu('coffee')" id="btn-coffee" class="flex-1 pb-3 text-sm font-bold uppercase tracking-widest text-gray-500 hover:text-street-yellow transition-colors">Coffee</button>
+                    <button onclick="filterMenu('dessert')" id="btn-dessert" class="flex-1 pb-3 text-sm font-bold uppercase tracking-widest text-gray-500 hover:text-street-yellow transition-colors">Dessert</button>
+                    
+                    <div id="tabSlider" class="absolute bottom-0 left-0 w-1/3 h-1 bg-street-yellow shadow-[0_0_10px_#FFAE00] transition-all duration-300 ease-out"></div>
+                </div>
             </div>
 
-            <div class="flex justify-center gap-4 sm:gap-6 mb-8 text-xs sm:text-sm text-gray-500 font-bold uppercase tracking-widest">
-                <button onclick="filterMenu('all')" class="cursor-pointer hover:text-street-yellow focus:text-street-yellow transition">All</button>
-                <button onclick="filterMenu('coffee')" class="cursor-pointer hover:text-street-yellow focus:text-street-yellow transition">Coffee</button>
-                <button onclick="filterMenu('dessert')" class="cursor-pointer hover:text-street-yellow focus:text-street-yellow transition">Dessert</button>
+            <div id="menuGrid" class="flex flex-col gap-6 pb-20 mt-4">
+                <p class="text-center text-gray-500 mt-10">Loading menu...</p>
             </div>
+        </section>
 
             <div id="menuGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                 <p class="col-span-full text-center text-gray-500">Loading brews...</p>

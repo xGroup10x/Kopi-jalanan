@@ -12,25 +12,42 @@
 
 <body class="min-h-screen flex flex-col">
 
-    <nav class="sticky top-0 z-50 bg-black border-b border-zinc-800 px-4 sm:px-6 py-4 flex justify-between items-center">
-        <div class="text-xl sm:text-2xl font-oswald font-bold tracking-wider text-white cursor-pointer" onclick="showPage('homePage')">
-            KOPI JALANAN<span class="text-street-yellow">.</span>
-        </div>
-        <div class="flex items-center gap-3 sm:gap-6">
-            <button onclick="showPage('aboutPage')" class="text-xs sm:text-sm uppercase tracking-widest hover:text-street-yellow transition">About</button>
-            <button onclick="showPage('homePage')" class="text-xs sm:text-sm uppercase tracking-widest hover:text-street-yellow transition">Home</button>
-            <button onclick="showPage('menuPage')" class="text-xs sm:text-sm uppercase tracking-widest hover:text-street-yellow transition">Menu</button>
+    <nav class="sticky top-0 z-50 bg-black border-b border-zinc-800 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center shadow-lg">
+        
+        <div class="flex items-center gap-3 cursor-pointer group" onclick="showPage('homePage')">
+            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-zinc-800 border border-zinc-700 overflow-hidden relative group-hover:border-street-yellow transition">
+                <img src="https://placehold.co/100x100/333/FFAE00?text=KJ" alt="Logo" class="w-full h-full object-cover">
+            </div>
             
-            <button onclick="showPage('cartPage')" class="relative text-lg sm:text-xl hover:text-street-yellow transition">
+            <div class="text-xl md:text-2xl font-oswald font-bold tracking-wider text-white group-hover:text-street-yellow transition">
+                KOPI JALANAN<span class="text-street-yellow">.</span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2 md:gap-6">
+            
+            <button onclick="showPage('homePage')" class="hidden md:block text-xs md:text-sm uppercase tracking-widest hover:text-street-yellow transition">
+                Home
+            </button>
+
+            <button onclick="showPage('menuPage')" class="text-xs md:text-sm uppercase tracking-widest hover:text-street-yellow transition">
+                Menu
+            </button>
+            
+            <button onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })" class="hidden md:block text-xs md:text-sm uppercase tracking-widest hover:text-street-yellow transition">
+                About
+            </button>
+
+            <button onclick="showPage('cartPage')" class="relative text-lg md:text-xl hover:text-street-yellow transition px-2">
                 <i class="fas fa-shopping-bag"></i>
-                <span id="cartCount" class="absolute -top-2 -right-2 bg-street-yellow text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                <span id="cartCount" class="absolute -top-1 -right-1 bg-street-yellow text-black text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">0</span>
             </button>
 
-            <button id="navAdminBtn" onclick="showPage('adminPage')" class="hidden text-red-500 hover:text-red-400 text-xs uppercase border border-red-900 px-2 py-1 rounded">
-                Admin Panel
+            <button id="navAdminBtn" onclick="showPage('adminPage')" class="hidden text-red-500 hover:text-red-400 text-[10px] uppercase border border-red-900 px-2 py-1 rounded whitespace-nowrap">
+                Admin
             </button>
 
-            <button id="navAuthBtn" onclick="handleAuthClick()" class="bg-zinc-800 text-white px-2 sm:px-4 py-1 sm:py-2 text-xs uppercase font-bold tracking-widest hover:bg-zinc-700 transition">
+            <button id="navAuthBtn" onclick="handleAuthClick()" class="bg-zinc-800 text-white px-3 py-1.5 md:px-4 md:py-2 text-[10px] md:text-xs uppercase font-bold tracking-widest hover:bg-zinc-700 transition whitespace-nowrap rounded-sm">
                 Login
             </button>
         </div>

@@ -110,64 +110,112 @@ function handleSignUp(e) {
 
 function filterMenu(category) {
     activeCategory = category;
+    
+    // 1. UPDATE SLIDER & COLORS
+    const slider = document.getElementById('tabSlider');
+    const btnAll = document.getElementById('btn-all');
+    const btnCoffee = document.getElementById('btn-coffee');
+    const btnDessert = document.getElementById('btn-dessert');
+    
+    // Reset all to gray
+    [btnAll, btnCoffee, btnDessert].forEach(btn => {
+        if(btn) {
+            btn.classList.remove('text-white');
+            btn.classList.add('text-gray-500');
+        }
+    });
+
+    // Move Slider & Highlight Active
+    if (category === 'all') {
+        slider.style.transform = 'translateX(0%)';
+        btnAll.classList.replace('text-gray-500', 'text-white');
+    } else if (category === 'coffee') {
+        slider.style.transform = 'translateX(100%)';
+        btnCoffee.classList.replace('text-gray-500', 'text-white');
+    } else if (category === 'dessert') {
+        slider.style.transform = 'translateX(200%)';
+        btnDessert.classList.replace('text-gray-500', 'text-white');
+    }
+
     renderMenu();
 }
 
 function renderMenu() {
-    const grid = document.getElementById('menuGrid');
-    if(!grid) return;
-    grid.innerHTML = '';
+    const container = document.getElementById('menuGrid');
+    if(!container) return;
+    container.innerHTML = '';
 
-    const filteredProducts = activeCategory === 'all' 
-        ? products 
-        : products.filter(p => p.category === activeCategory);
-    
-    if (filteredProducts.length === 0) {
-        grid.innerHTML = '<p class="col-span-full text-center text-gray-500">No items found.</p>';
-        return;
+    // LOGIC: Grouping for "ALL" tab
+    if (activeCategory === 'all') {
+        const coffees = products.filter(p => p.category === 'coffee');
+        const desserts = products.filter(p => p.category === 'dessert');
+
+        // 1. Render Coffee Section
+        if (coffees.length > 0) {
+            renderSectionHeader(container, "Coffee Series", "fas fa-mug-hot");
+            coffees.forEach(p => container.innerHTML += createProductCard(p));
+        }
+
+        // 2. Render Dessert Section
+        if (desserts.length > 0) {
+            renderSectionHeader(container, "Desserts & Bites", "fas fa-cookie-bite");
+            desserts.forEach(p => container.innerHTML += createProductCard(p));
+        }
+        
+        if (coffees.length === 0 && desserts.length === 0) {
+             container.innerHTML = '<p class="text-center text-gray-500 mt-10">Menu is empty.</p>';
+        }
+    } 
+    // LOGIC: Specific Category
+    else {
+        const filtered = products.filter(p => p.category === activeCategory);
+        if (filtered.length === 0) {
+            container.innerHTML = '<p class="text-center text-gray-500 mt-10">No items found.</p>';
+        } else {
+            renderSectionHeader(container, activeCategory === 'coffee' ? "Coffee Series" : "Desserts", "fas fa-star");
+            filtered.forEach(p => container.innerHTML += createProductCard(p));
+        }
     }
-    
-    filteredProducts.forEach(prod => {
-        // 1. LOGIC: Check Stock (Treat <= 0 as sold out)
-        const isSoldOut = prod.stock <= 0;
-        
-        // 2. VISUALS: Green for Available, Red for Sold Out
-        const badgeColor = isSoldOut ? "bg-red-600" : "bg-green-600";
-        const badgeText = isSoldOut ? "Out of Stock" : `${prod.stock} left`;
-        
-        // 3. STYLE: Gray out image if empty
-        const imgOpacity = isSoldOut ? "opacity-40 grayscale" : "";
+}
 
-        // 4. BUTTONS: Disable if sold out
-        const btnText = isSoldOut ? "SOLD OUT" : "Customize";
-        const btnClass = isSoldOut 
-            ? "bg-zinc-700 text-gray-500 cursor-not-allowed" 
-            : "bg-white text-black hover:bg-street-yellow cursor-pointer";
-        const clickAction = isSoldOut ? "" : `onclick="viewDetail('${prod.id}')"`;
+// Helper: Section Title
+function renderSectionHeader(container, title, icon) {
+    container.innerHTML += `
+        <div class="flex items-center gap-2 mt-6 mb-2 pb-2 border-b border-zinc-800">
+            <i class="${icon} text-street-yellow"></i>
+            <h3 class="text-lg font-oswald font-bold text-white uppercase tracking-wider">${title}</h3>
+        </div>
+    `;
+}
 
-        grid.innerHTML += `
-            <div class="bg-zinc-800 border border-zinc-700 p-4 transition hover:border-street-yellow group relative">
-                
-                <div class="absolute top-2 left-2 ${badgeColor} text-white text-xs font-bold px-2 py-1 rounded z-20 shadow-md pointer-events-none">
-                    ${badgeText}
-                </div>
+// Helper: Horizontal Card (Foodpanda Style)
+function createProductCard(prod) {
+    const isSoldOut = prod.stock <= 0;
+    const opacity = isSoldOut ? "opacity-50 grayscale" : "";
+    const clickAction = isSoldOut ? "" : `onclick="viewDetail('${prod.id}')"`;
+    const displayImg = prod.imgUrl || 'https://placehold.co/100x100/333/FFAE00?text=KJ';
 
-                <div class="h-48 overflow-hidden mb-4 relative z-0">
-                    <img src="${prod.imgUrl}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 ${imgOpacity}">
-                    
-                    <div class="absolute top-2 right-2 bg-street-yellow text-black font-bold px-2 py-1 text-sm z-10">
-                        RM ${prod.price.toFixed(2)}
-                    </div>
-                </div>
+    return `
+    <div ${clickAction} class="flex gap-4 p-3 bg-zinc-900/50 rounded-xl border border-zinc-800 hover:border-street-yellow transition cursor-pointer group ${opacity}">
+        <div class="relative w-24 h-24 flex-shrink-0 bg-zinc-800 rounded-lg overflow-hidden">
+            <img src="${displayImg}" class="w-full h-full object-cover">
+            ${isSoldOut ? '<div class="absolute inset-0 bg-black/60 flex items-center justify-center text-[10px] font-bold text-white uppercase">Sold Out</div>' : ''}
+        </div>
 
-                <h3 class="text-2xl font-oswald uppercase mb-1 text-white">${prod.name}</h3>
-                <p class="text-gray-400 text-sm mb-4 truncate">${prod.desc}</p>
-                
-                <button ${clickAction} class="w-full font-bold py-2 text-xs uppercase tracking-widest transition ${btnClass}" ${isSoldOut ? 'disabled' : ''}>
-                    ${btnText}
+        <div class="flex-1 flex flex-col justify-between">
+            <div>
+                <h4 class="text-white font-bold font-oswald uppercase text-lg leading-tight">${prod.name}</h4>
+                <p class="text-gray-400 text-xs mt-1 line-clamp-2">${prod.desc}</p>
+            </div>
+            
+            <div class="flex justify-between items-end mt-2">
+                <div class="text-street-yellow font-bold">RM ${prod.price.toFixed(2)}</div>
+                <button class="w-8 h-8 rounded-full bg-zinc-800 text-white flex items-center justify-center hover:bg-street-yellow hover:text-black transition shadow-lg">
+                    <i class="fas fa-plus text-xs"></i>
                 </button>
-            </div>`;
-    });
+            </div>
+        </div>
+    </div>`;
 }
 
 // --- 7. DETAILS & CUSTOMIZATION ---
@@ -469,3 +517,4 @@ window.showPage = showPage;
 window.submitCheckout = submitCheckout;
 window.filterMenu = filterMenu;
 window.selectOption = selectOption;
+

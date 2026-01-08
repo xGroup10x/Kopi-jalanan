@@ -99,22 +99,50 @@ function renderMenu() {
     if (!grid) return;
 
     grid.innerHTML = "";
-    const dataSource = products.length ? products : menuItems;
+
+    const dataSource = products.length
+        ? products
+        : menuItems.map(i => ({
+            ...i,
+            imgUrl: "https://placehold.co/400x300/2c2c2c/FFAE00?text=Kopi+Jalanan"
+        }));
 
     dataSource.forEach(item => {
         const card = document.createElement('div');
-        card.className = "menu-card";
+        card.className =
+            "bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-lg";
+
         card.innerHTML = `
-            <h3 class="font-oswald text-xl mb-2">${item.name}</h3>
-            <p class="text-gray-400 mb-4">RM ${item.price.toFixed(2)}</p>
-            <button onclick="addToCart('${item.id}')" 
-                class="bg-street-yellow text-black font-bold px-4 py-2 uppercase">
-                Add to Cart
-            </button>
+            <div class="h-40 bg-black">
+                <img 
+                    src="${item.imgUrl}" 
+                    alt="${item.name}"
+                    class="w-full h-full object-cover"
+                >
+            </div>
+
+            <div class="p-4">
+                <h3 class="font-oswald text-xl mb-1 text-white">
+                    ${item.name}
+                </h3>
+
+                <p class="text-street-yellow font-bold mb-3">
+                    RM ${item.price.toFixed(2)}
+                </p>
+
+                <button 
+                    onclick="addToCart('${item.id}')"
+                    class="w-full bg-street-yellow text-black font-bold py-2 uppercase hover:bg-white transition"
+                >
+                    Add to Cart
+                </button>
+            </div>
         `;
+
         grid.appendChild(card);
     });
 }
+
 
 // ======================================================
 // 8. CART LOGIC (YOUR CODE – IMPROVED)
@@ -235,3 +263,4 @@ Object.assign(window, {
     submitCheckout,
     handleAuthClick
 });
+

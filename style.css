@@ -16,24 +16,18 @@ body {
     background-color: #FFAE00;
 }
 
-p {
-    line-height: 1.75;
-}
-
 .page-section {
     animation: fadeIn 0.3s ease-in-out;
 }
 
+/* FADE IN ANIMATION FOR MOBILE MENU */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
+    from { opacity: 0; transform: translateY(-5px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Navbar */
-.nav-btn {
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    transition: color 0.2s;
+.animate-fade-in {
+    animation: fadeIn 0.2s ease-out forwards;
 }
 
 .nav-btn:hover,
@@ -42,21 +36,6 @@ p {
     border-bottom: 2px solid #FFAE00;
 }
 
-/* Menu cards */
-.menu-card {
-    background: #111;
-    border: 1px solid #27272a;
-    padding: 16px;
-    border-radius: 12px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.menu-card:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 25px rgba(255,174,0,0.15);
-}
-
-/* Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
 }

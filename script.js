@@ -655,6 +655,7 @@ async function loadOrderHistory() {
 
 
 // --- EXPORTS ---
+window.showPage = showPage;
 window.handleAuthClick = handleAuthClick;
 window.handleLogin = handleLogin;
 window.handleSignUp = handleSignUp;
@@ -673,5 +674,6 @@ window.submitCheckout = submitCheckout;
 window.filterMenu = filterMenu;
 window.selectOption = selectOption;
 window.loadOrderHistory = loadOrderHistory;
+
 
 

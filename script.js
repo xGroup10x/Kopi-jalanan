@@ -1,6 +1,6 @@
 // --- 1. FIREBASE IMPORTS ---
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, addDoc, deleteDoc, updateDoc, increment, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, addDoc, deleteDoc, updateDoc, increment, onSnapshot, getDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // --- 2. CONFIGURATION ---
@@ -533,6 +533,127 @@ function showPage(pageId) {
     window.scrollTo(0, 0);
 }
 
+// --- NEW: SKELETON LOADER ---
+function showSkeletons() {
+    const container = document.getElementById('menuGrid');
+    if(!container) return;
+    container.innerHTML = '';
+    for (let i = 0; i < 4; i++) {
+        container.innerHTML += `
+        <div class="flex gap-4 p-3 bg-zinc-900/50 rounded-xl border border-zinc-800">
+            <div class="w-24 h-24 flex-shrink-0 skeleton"></div>
+            <div class="flex-1 flex flex-col justify-between">
+                <div>
+                    <div class="h-5 w-3/4 skeleton mb-2"></div>
+                    <div class="h-3 w-1/2 skeleton"></div>
+                </div>
+                <div class="flex justify-between items-end mt-2">
+                    <div class="h-5 w-16 skeleton"></div>
+                    <div class="h-8 w-8 rounded-full skeleton"></div>
+                </div>
+            </div>
+        </div>`;
+    }
+}
+
+// --- NEW: UPDATED CART UI WITH ANIMATION ---
+function updateCartUI() {
+    const cartCountEl = document.getElementById('cartCount');
+    if(cartCountEl) {
+        cartCountEl.innerText = cart.length;
+        // Trigger Animation
+        cartCountEl.classList.remove('animate-pop');
+        void cartCountEl.offsetWidth; // Force reflow to restart animation
+        cartCountEl.classList.add('animate-pop');
+    }
+    
+    const list = document.getElementById('cartList');
+    if(!list) return;
+    list.innerHTML = '';
+    let total = 0;
+
+    if (cart.length === 0) {
+        list.innerHTML = '<p class="text-gray-500 text-sm">Your basket is empty.</p>';
+    } else {
+        cart.forEach((item, index) => {
+            total += item.price;
+            list.innerHTML += `
+                <div class="flex justify-between items-center border-b border-zinc-700 py-3">
+                    <div>
+                        <div class="font-bold text-white text-sm uppercase">${item.name}</div>
+                        <div class="text-[10px] text-gray-500 italic">${item.customization}</div>
+                        <div class="text-xs text-street-yellow">RM ${item.price.toFixed(2)}</div>
+                    </div>
+                    <button onclick="removeFromCart(${index})" class="text-gray-600 hover:text-red-500 transition">
+                        <i class="fas fa-trash-can"></i>
+                    </button>
+                </div>`;
+        });
+    }
+    document.getElementById('cartTotal').innerText = `RM ${total.toFixed(2)}`;
+    document.getElementById('checkoutTotal').innerText = `RM ${total.toFixed(2)}`;
+}
+
+// --- NEW: ORDER HISTORY LOGIC ---
+async function loadOrderHistory() {
+    if (!currentUser) {
+        alert("Login required to view history.");
+        showPage('authPage');
+        return;
+    }
+
+    const list = document.getElementById('historyList');
+    // Show skeleton loaders during fetch
+    list.innerHTML = '<div class="space-y-4">';
+    for(let i=0; i<3; i++) list.innerHTML += '<div class="h-24 w-full skeleton"></div>';
+    list.innerHTML += '</div>';
+
+    try {
+        const q = query(
+            collection(db, "orders"),
+            where("userId", "==", currentUser.uid),
+            orderBy("createdAt", "desc")
+        );
+        
+        const querySnapshot = await getDocs(q);
+        list.innerHTML = '';
+
+        if (querySnapshot.empty) {
+            list.innerHTML = '<p class="text-center text-gray-500 py-10">You haven\'t ordered anything yet.</p>';
+            return;
+        }
+
+        querySnapshot.forEach((doc) => {
+            const order = doc.data();
+            const date = new Date(order.createdAt).toLocaleDateString('en-GB', {
+                day: '2-digit', month: 'short', year: 'numeric'
+            });
+
+            list.innerHTML += `
+                <div class="bg-zinc-900/50 border border-zinc-800 p-5 rounded-xl hover:border-zinc-700 transition">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <span class="text-[10px] text-gray-500 uppercase tracking-widest">${date}</span>
+                            <div class="text-white font-bold font-oswald text-lg uppercase">Order #${doc.id.slice(-5).toUpperCase()}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-street-yellow font-bold">${order.total}</div>
+                            <span class="text-[10px] px-2 py-0.5 rounded bg-zinc-800 text-gray-300 uppercase font-bold">${order.status || 'Pending'}</span>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-400 border-t border-zinc-800 pt-3 italic">
+                        ${order.items.map(item => item.name).join(", ")}
+                    </div>
+                </div>`;
+        });
+    } catch (e) {
+        console.error("History Error:", e);
+        list.innerHTML = '<p class="text-red-500 text-center">Failed to load history.</p>';
+    }
+}
+
+
+
 // --- EXPORTS ---
 window.handleAuthClick = handleAuthClick;
 window.handleLogin = handleLogin;
@@ -551,3 +672,6 @@ window.showPage = showPage;
 window.submitCheckout = submitCheckout;
 window.filterMenu = filterMenu;
 window.selectOption = selectOption;
+window.loadOrderHistory = loadOrderHistory;
+window.updateCartUI = updateCartUI;
+

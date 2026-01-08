@@ -2,15 +2,37 @@
 // 1. BASIC PAGE & NAV LOGIC
 // ======================================================
 const pages = document.querySelectorAll('.page-section');
-const navBtns = document.querySelectorAll('.nav-btn');
 
 function showPage(pageId) {
+    // 1. Hide all pages
     pages.forEach(p => p.classList.add('hidden'));
+    
+    // 2. Show target page
     const target = document.getElementById(pageId);
     if(target) target.classList.remove('hidden');
 
-    navBtns.forEach(btn => btn.classList.remove('active-nav'));
+    // 3. Highlight Active Nav Button
+    updateActiveNav(pageId);
+
     window.scrollTo(0, 0);
+}
+
+function updateActiveNav(pageId) {
+    // Select all nav buttons (desktop & mobile)
+    const allNavBtns = document.querySelectorAll('.nav-btn, #mobileMenu button');
+    
+    allNavBtns.forEach(btn => {
+        // Reset styles
+        btn.classList.remove('text-street-yellow', 'font-bold');
+        btn.classList.add('text-gray-300'); // Default color
+        
+        // Check if this button links to the current page
+        const onclickVal = btn.getAttribute('onclick');
+        if (onclickVal && onclickVal.includes(pageId)) {
+            btn.classList.remove('text-gray-300');
+            btn.classList.add('text-street-yellow', 'font-bold');
+        }
+    });
 }
 
 // ======================================================
@@ -53,11 +75,13 @@ let activeCategory = "all";
 let isProcessingOrder = false;
 let editingProductId = null;
 
-// Fallback Menu (If Firebase is empty)
+// Static Menu (Fallback)
 const menuItems = [
-    { id: "kopi-o", name: "Kopi O", price: 3.50, category: "coffee", desc: "Kopi O je" },
-    { id: "latte", name: "Latte", price: 5.00, category: "coffee", desc: "Smooth & Creamy" },
-    { id: "cucur", name: "Cucur Udang", price: 5.70, category: "dessert", desc: "Crispy prawn fritters" }
+    { id: "americano", name: "Americano", price: 6.00, category: "coffee", imgUrl: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=200&auto=format&fit=crop", desc: "Bold & Robust" },
+    { id: "caramel-mac", name: "Caramel Macchiato", price: 8.00, category: "coffee", imgUrl: "https://images.unsplash.com/photo-1485808191679-5f8c7c8606f4?q=80&w=200&auto=format&fit=crop", desc: "Sweet & Creamy" },
+    { id: "cucur", name: "Cucur Udang Kuah Kacang", price: 5.70, category: "dessert", imgUrl: "https://resepichenom.com/media/Cucur_Udang_Kuah_Kacang.jpg", desc: "Traditional crispy prawn fritters." },
+    { id: "lasagna", name: "Lasagna", price: 5.00, category: "dessert", imgUrl: "https://www.allrecipes.com/thmb/iOfxQGOJTdM0K6edW-k8VBrSL9M=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/23600-worlds-best-lasagna-DDMFS-4x3-1196-24c5401652934ffb96d3d94bc9fbae2d.jpg", desc: "Layers of pasta with rich minced meat." },
+    { id: "mochi", name: "Red Bean Mochi", price: 3.00, category: "dessert", imgUrl: "https://images.unsplash.com/photo-1615887023591-614d65682979?q=80&w=200&auto=format&fit=crop", desc: "Chewy sweet snack." }
 ];
 
 // ======================================================
@@ -66,7 +90,12 @@ const menuItems = [
 document.addEventListener("DOMContentLoaded", () => {
     // Firebase products
     onSnapshot(collection(db, "products"), (snap) => {
-        products = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+        const firebaseData = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+        if(firebaseData.length > 0) {
+            products = firebaseData;
+        } else {
+            products = menuItems;
+        }
         renderMenu();
         renderAdminTable();
     });
@@ -88,6 +117,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderMenu();
     updateCart();
+    
+    // Highlight "Home" by default
+    updateActiveNav('homePage'); 
 });
 
 // ======================================================
@@ -101,6 +133,7 @@ function filterMenu(category) {
     const btnDessert = document.getElementById('btn-dessert');
     const slider = document.getElementById('tabSlider');
 
+    // Reset Tab Colors
     [btnAll, btnCoffee, btnDessert].forEach(b => {
         if(b) {
             b.classList.remove('text-white');
@@ -108,6 +141,7 @@ function filterMenu(category) {
         }
     });
 
+    // Set Active Tab
     if(category === 'all' && btnAll) {
         btnAll.classList.replace('text-gray-500', 'text-white');
         if(slider) slider.style.transform = 'translateX(0%)';
@@ -129,8 +163,8 @@ function renderMenu() {
     if (!grid) return;
     grid.innerHTML = "";
     
-    // Reduce gap by removing top margin
-    grid.className = "flex flex-col gap-3 pb-20 mt-4"; 
+    // Gap Fix
+    grid.className = "flex flex-col gap-3 pb-20 mt-4 px-1"; 
 
     const dataSource = products.length ? products : menuItems;
 
@@ -143,18 +177,14 @@ function renderMenu() {
         return;
     }
 
-    // --- HORIZONTAL CARD LAYOUT (Matches Image 2) ---
+    // Horizontal Card Layout
     filteredData.forEach(item => {
         const imgUrl = item.imgUrl || "https://placehold.co/400x300/2c2c2c/FFAE00?text=Kopi+Jalanan";
         
         const card = document.createElement('div');
-        // Horizontal Layout: Image Left, Content Middle, Button Right
         card.className = "flex gap-4 p-3 bg-zinc-900 border border-zinc-800 rounded-xl items-center shadow-md hover:border-street-yellow transition cursor-pointer";
-        
-        // Clicking the whole card opens details
         card.onclick = (e) => {
-            // Prevent triggering if clicking the specific button (optional logic, but here we just open detail)
-            viewDetail(item.id);
+            if(!e.target.closest('button')) viewDetail(item.id);
         };
 
         card.innerHTML = `
@@ -164,12 +194,12 @@ function renderMenu() {
 
             <div class="flex-1 min-w-0">
                 <h3 class="font-oswald text-lg text-white uppercase truncate tracking-wide">${item.name}</h3>
-                <p class="text-xs text-gray-400 line-clamp-2 leading-relaxed mt-0.5">${item.desc || "Delicious street brew."}</p>
+                <p class="text-xs text-gray-400 line-clamp-2 leading-relaxed mt-0.5">${item.desc || ""}</p>
                 <div class="text-street-yellow font-bold mt-1 text-md">RM ${item.price.toFixed(2)}</div>
             </div>
 
             <div class="flex-shrink-0">
-                <button class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-zinc-800 border border-zinc-700 text-white flex items-center justify-center hover:bg-street-yellow hover:text-black hover:border-street-yellow transition shadow-lg">
+                <button onclick="viewDetail('${item.id}')" class="w-9 h-9 rounded-full bg-zinc-800 border border-zinc-700 text-white flex items-center justify-center hover:bg-street-yellow hover:text-black hover:border-street-yellow transition shadow-lg">
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
@@ -179,24 +209,25 @@ function renderMenu() {
 }
 
 // ======================================================
-// 7. PRODUCT DETAIL & CUSTOMIZATION (Matches Image 3)
+// 7. PRODUCT DETAIL & CUSTOMIZATION
 // ======================================================
 
 function viewDetail(id) {
     const prod = products.find(p => p.id === id) || menuItems.find(p => p.id === id);
     if (!prod) return;
 
-    // Populate Info
+    // 1. Populate Info
     document.getElementById('detailImage').src = prod.imgUrl || "https://placehold.co/400x300/2c2c2c/FFAE00?text=Kopi+Jalanan";
     document.getElementById('detailName').innerText = prod.name;
     document.getElementById('detailPrice').innerText = `RM ${prod.price.toFixed(2)}`;
     document.getElementById('detailDesc').innerText = prod.desc || "";
     
-    // Generate Options
+    // 2. Generate Options
     const container = document.getElementById('detailOptions');
-    container.innerHTML = '';
+    container.innerHTML = ''; // Reset options
 
-    if (prod.category === 'coffee' || !prod.category) { // Default to coffee options
+    if (prod.category === 'coffee') { 
+        // --- COFFEE STYLE: CIRCULAR BUTTONS ---
         container.innerHTML = `
             <div class="mb-5">
                 <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Mood</label>
@@ -205,7 +236,6 @@ function viewDetail(id) {
                     ${createIconOption('mood', 'Cold', 'fas fa-snowflake', true)}
                 </div>
             </div>
-
             <div class="mb-5">
                 <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Size</label>
                 <div class="flex gap-4">
@@ -214,7 +244,6 @@ function viewDetail(id) {
                     ${createCircleOption('size', 'L', 'L')}
                 </div>
             </div>
-
             <div class="mb-5">
                 <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Sugar</label>
                 <div class="flex gap-4">
@@ -223,7 +252,6 @@ function viewDetail(id) {
                     ${createCircleOption('sugar', '70%', '70%')}
                 </div>
             </div>
-
             <div class="mb-5">
                 <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Ice</label>
                 <div class="flex gap-4">
@@ -233,26 +261,13 @@ function viewDetail(id) {
                 </div>
             </div>
         `;
-    } else {
-        // Dessert Options
-        container.innerHTML = `
-             <div class="mb-6">
-                <label class="block text-gray-400 text-xs font-bold mb-3 uppercase">Add-ons</label>
-                <div class="flex flex-col gap-3">
-                    <label class="flex items-center justify-between p-3 border border-zinc-700 rounded-lg cursor-pointer hover:border-street-yellow transition bg-zinc-900/50">
-                        <span class="text-white text-sm">Chocolate Sauce</span>
-                        <input type="checkbox" value="Choco Sauce" class="opt-topping w-5 h-5 accent-street-yellow"> 
-                    </label>
-                    <label class="flex items-center justify-between p-3 border border-zinc-700 rounded-lg cursor-pointer hover:border-street-yellow transition bg-zinc-900/50">
-                        <span class="text-white text-sm">Caramel Drizzle</span>
-                        <input type="checkbox" value="Caramel" class="opt-topping w-5 h-5 accent-street-yellow"> 
-                    </label>
-                </div>
-            </div>
-        `;
+    } 
+    else if (prod.category === 'dessert') {
+        // --- DESSERT STYLE: NO ADD ONS ---
+        container.innerHTML = ``; // Empty string removes all options
     }
 
-    // Update Add Button
+    // 3. Update Add Button
     const addBtn = document.getElementById('detailAddBtn');
     addBtn.innerText = "ADD TO ORDER"; 
     addBtn.onclick = () => addCustomToCart(prod.id);
@@ -260,47 +275,41 @@ function viewDetail(id) {
     showPage('detailPage');
 }
 
-// Add Item Logic
+// Add Logic
 function addCustomToCart(id) {
     const prod = products.find(p => p.id === id) || menuItems.find(p => p.id === id);
     let finalPrice = prod.price;
     let details = [];
 
-    if (prod.category === 'coffee' || !prod.category) {
+    if (prod.category === 'coffee') {
         const mood = document.querySelector('.mood-btn.bg-street-yellow')?.dataset.value || 'Cold';
         const size = document.querySelector('.size-btn.bg-street-yellow')?.dataset.value || 'M';
         const sugar = document.querySelector('.sugar-btn.bg-street-yellow')?.dataset.value || '50%';
         const ice = document.querySelector('.ice-btn.bg-street-yellow')?.dataset.value || '50%';
 
-        // Price adjustments
         if(size === 'L') finalPrice += 2.00;
         if(size === 'M') finalPrice += 1.00;
 
         details.push(`${mood} | Size ${size}`);
         details.push(`Sugar ${sugar} | Ice ${ice}`);
-    } else {
-        document.querySelectorAll('.opt-topping:checked').forEach(t => { 
-            finalPrice += 0.50; 
-            details.push(t.value); 
-        });
+    } 
+    else if (prod.category === 'dessert') {
+        // No options to read
     }
 
     const cartItem = {
         ...prod,
         finalPrice: finalPrice,
-        customization: details.join(", "),
+        customization: details.length > 0 ? details.join(", ") : "Standard",
         cartId: Date.now()
     };
 
     cart.push(cartItem);
     updateCart();
-    // Go back to menu automatically
     showPage('menuPage');
 }
 
-// --- HELPERS FOR CIRCULAR BUTTONS ---
-
-// 1. Text Circles (Size, Sugar, Ice)
+// --- HELPER: CIRCLE BUTTONS ---
 function createCircleOption(group, value, label, active=false) {
     const activeClass = active 
         ? "bg-street-yellow text-black border-street-yellow" 
@@ -309,12 +318,12 @@ function createCircleOption(group, value, label, active=false) {
     return `
         <div onclick="selectOption('${group}', this)" 
              data-value="${value}" 
-             class="option-btn ${group}-btn w-12 h-12 rounded-full border flex items-center justify-center text-xs font-bold cursor-pointer transition ${activeClass}">
+             class="option-btn ${group}-btn w-12 h-12 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition ${activeClass}">
              ${label}
         </div>`;
 }
 
-// 2. Icon Circles (Mood)
+// --- HELPER: ICON BUTTONS ---
 function createIconOption(group, value, iconClass, active=false) {
     const activeClass = active 
         ? "bg-street-yellow text-black border-street-yellow" 
@@ -323,21 +332,18 @@ function createIconOption(group, value, iconClass, active=false) {
     return `
         <div onclick="selectOption('${group}', this)" 
              data-value="${value}" 
-             class="option-btn ${group}-btn w-12 h-12 rounded-full border flex items-center justify-center text-lg cursor-pointer transition ${activeClass}">
+             class="option-btn ${group}-btn w-12 h-12 rounded-full border-2 flex items-center justify-center text-lg cursor-pointer transition ${activeClass}">
              <i class="${iconClass}"></i>
         </div>`;
 }
 
-// Global Selector Logic
 window.selectOption = function(group, el) {
-    // Reset siblings
     document.querySelectorAll(`.${group}-btn`).forEach(btn => {
         btn.classList.remove("bg-street-yellow", "text-black", "border-street-yellow");
         btn.classList.add("bg-transparent", "text-gray-400", "border-zinc-600");
         if(group === 'mood') btn.classList.add("bg-zinc-800"); 
     });
     
-    // Activate current
     el.classList.remove("bg-transparent", "text-gray-400", "border-zinc-600", "bg-zinc-800");
     el.classList.add("bg-street-yellow", "text-black", "border-street-yellow");
 };

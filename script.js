@@ -1,5 +1,4 @@
 // --- 1. FIREBASE IMPORTS ---
-// Added 'getDoc' to the imports below
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, addDoc, deleteDoc, updateDoc, increment, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -24,7 +23,7 @@ let cart = [];
 let products = [];
 let currentUser = null;
 let activeCategory = 'all'; 
-let isAdmin = false; // Changed: We will set this based on database check
+let isAdmin = false; 
 
 // --- 4. STARTUP LISTENERS ---
 document.addEventListener("DOMContentLoaded", () => {
@@ -34,14 +33,13 @@ document.addEventListener("DOMContentLoaded", () => {
     onSnapshot(productsRef, (snapshot) => {
         products = [];
         snapshot.forEach((doc) => {
-            // Combine data with ID safely
             products.push({ ...doc.data(), id: doc.id });
         });
         renderMenu();
         renderAdminTable();
     });
 
-    // B. Listen for Auth Changes (Updated for DB Check)
+    // B. Listen for Auth Changes
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
         isAdmin = false; // Reset to false by default
@@ -75,7 +73,6 @@ function updateNavUI(user) {
         authBtn.innerText = "Logout";
         authBtn.classList.replace('bg-zinc-800', 'bg-red-600');
         
-        // Updated: Check the boolean variable instead of hardcoded string
         if (isAdmin) {
             adminBtn.classList.remove('hidden');
         } else {
@@ -204,7 +201,7 @@ function renderSectionHeader(container, title, icon) {
     `;
 }
 
-// Helper: Horizontal Card (Foodpanda Style)
+// Helper: Horizontal Card
 function createProductCard(prod) {
     const isSoldOut = prod.stock <= 0;
     const opacity = isSoldOut ? "opacity-50 grayscale" : "";
@@ -249,7 +246,6 @@ function viewDetail(id) {
     container.innerHTML = '';
 
     if (prod.category === 'coffee') {
-        // COFFEE OPTIONS
         container.innerHTML = `
             <div>
                 <label class="block text-white font-bold mb-3">Mood</label>
@@ -284,7 +280,6 @@ function viewDetail(id) {
             </div>
         `;
     } else {
-        // DESSERT OPTIONS
         container.innerHTML = `
              <div>
                 <label class="block text-white font-bold mb-3">Extra Toppings (+RM 0.50)</label>
@@ -307,19 +302,16 @@ function viewDetail(id) {
     showPage('detailPage');
 }
 
-// Helper: Circular Buttons
 function createOptionHTML(group, value, label, active=false) {
     const activeClass = active ? "bg-street-yellow text-black border-street-yellow font-bold" : "border-zinc-700 text-gray-400";
     return `<div onclick="selectOption('${group}', this)" data-value="${value}" class="option-btn ${group}-btn w-12 h-12 rounded-full border flex items-center justify-center cursor-pointer transition ${activeClass}">${label}</div>`;
 }
 
-// Helper: Mood Buttons
 function createMoodHTML(value, icon, active=false) {
     const activeClass = active ? "bg-street-yellow text-black border-street-yellow" : "bg-zinc-800 border-zinc-700 text-gray-500";
     return `<div onclick="selectOption('mood', this)" data-value="${value}" class="option-btn mood-btn w-14 h-14 rounded-full border flex items-center justify-center cursor-pointer transition text-xl ${activeClass}"><i class="${icon}"></i></div>`;
 }
 
-// Logic for clicking buttons
 window.selectOption = function(group, el) {
     document.querySelectorAll(`.${group}-btn`).forEach(e => {
         e.classList.remove("bg-street-yellow","text-black","border-street-yellow","font-bold");
@@ -413,12 +405,12 @@ async function submitCheckout(e) {
     if(!confirm(`Confirm Order for RM ${document.getElementById('checkoutTotal').innerText.replace('RM ', '')}?`)) return;
 
     try {
-        // --- SAFETY CHECK: STOP if stock is already negative/zero ---
+        // --- SAFETY CHECK ---
         for (const item of cart) {
             const freshProd = products.find(p => p.id === item.id);
             if (!freshProd || freshProd.stock <= 0) {
                 alert(`SORRY! ${item.name} is currently out of stock.`);
-                return; // Stop the entire order
+                return;
             }
         }
 
@@ -457,7 +449,6 @@ async function submitCheckout(e) {
 
 async function addProduct(event) {
     event.preventDefault();
-    // Updated: Check boolean variable
     if (!currentUser || !isAdmin) return alert("Admins Only!");
 
     const name = document.getElementById('prodName').value;
@@ -479,9 +470,31 @@ async function addProduct(event) {
 }
 
 async function deleteProduct(id) {
-    // Updated: Check boolean variable
     if (!currentUser || !isAdmin) return alert("Admins Only!");
     if(confirm("Delete this item?")) await deleteDoc(doc(db, "products", id));
+}
+
+// NEW: Restock Function
+async function restockProduct(id, currentStock) {
+    if (!currentUser || !isAdmin) return alert("Admins Only!");
+
+    const input = prompt(`Enter amount to ADD to inventory (Current: ${currentStock}):`, "10");
+    if (input === null) return; 
+    
+    const amountToAdd = parseInt(input);
+    if (isNaN(amountToAdd) || amountToAdd === 0) {
+        return alert("Please enter a valid number.");
+    }
+
+    try {
+        const productRef = doc(db, "products", id);
+        await updateDoc(productRef, { 
+            stock: increment(amountToAdd) 
+        });
+    } catch (e) {
+        console.error(e);
+        alert("Error updating stock: " + e.message);
+    }
 }
 
 function renderAdminTable() {
@@ -490,7 +503,6 @@ function renderAdminTable() {
     tbody.innerHTML = '';
 
     products.forEach(p => {
-        // Red color if stock is low (< 10)
         const stockColor = (p.stock < 10) ? 'text-red-500' : 'text-street-yellow';
         
         tbody.innerHTML += `
@@ -502,8 +514,11 @@ function renderAdminTable() {
                 <td class="p-3">
                     Qty: <span class="${stockColor} font-bold">${p.stock || 0}</span>
                 </td>
-                <td class="p-3 text-right">
-                    <button onclick="deleteProduct('${p.id}')" class="text-red-500 hover:text-red-400">
+                <td class="p-3 text-right whitespace-nowrap">
+                    <button onclick="restockProduct('${p.id}', ${p.stock})" class="text-green-500 hover:text-green-400 mr-4" title="Restock">
+                        <i class="fas fa-plus-circle"></i> Restock
+                    </button>
+                    <button onclick="deleteProduct('${p.id}')" class="text-red-500 hover:text-red-400" title="Delete">
                         <i class="fas fa-trash"></i>
                     </button>
                 </td>
@@ -524,6 +539,7 @@ window.handleLogin = handleLogin;
 window.handleSignUp = handleSignUp;
 window.addProduct = addProduct;
 window.deleteProduct = deleteProduct;
+window.restockProduct = restockProduct; // Added new export
 window.renderMenu = renderMenu;
 window.renderAdminTable = renderAdminTable;
 window.updateCartUI = updateCartUI;

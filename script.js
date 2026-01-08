@@ -144,17 +144,19 @@ function renderMenu() {
         const imgUrl = item.imgUrl || "https://placehold.co/400x300/2c2c2c/FFAE00?text=Kopi+Jalanan";
         
         const card = document.createElement('div');
-        card.className = "bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-lg";
+        card.className = "bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-lg flex flex-col";
         card.innerHTML = `
-            <div class="h-40 bg-black">
+            <div class="h-48 bg-black relative">
                 <img src="${imgUrl}" class="w-full h-full object-cover">
             </div>
-            <div class="p-4">
-                <h3 class="font-oswald text-xl mb-1 text-white">${item.name}</h3>
-                <p class="text-street-yellow font-bold mb-3">RM ${item.price.toFixed(2)}</p>
-                <button onclick="addToCart('${item.id}')" class="w-full bg-street-yellow text-black font-bold py-2 uppercase hover:bg-white transition">
-                    Add to Cart
-                </button>
+            <div class="p-4 flex flex-col flex-grow">
+                <h3 class="font-oswald text-xl mb-1 text-white uppercase">${item.name}</h3>
+                <p class="text-street-yellow font-bold mb-4">RM ${item.price.toFixed(2)}</p>
+                <div class="mt-auto">
+                    <button onclick="viewDetail('${item.id}')" class="w-full bg-street-yellow text-black font-bold py-3 uppercase hover:bg-white transition tracking-widest rounded-sm">
+                        Customize
+                    </button>
+                </div>
             </div>
         `;
         grid.appendChild(card);
@@ -162,17 +164,139 @@ function renderMenu() {
 }
 
 // ======================================================
-// 7. CART LOGIC
+// 7. PRODUCT DETAIL & CUSTOMIZATION (NEW LOGIC)
 // ======================================================
-function addToCart(id) {
-    const source = products.length ? products : menuItems;
-    const item = source.find(i => i.id == id);
-    if (!item) return;
 
-    cart.push({ ...item, finalPrice: item.price });
-    updateCart();
+// Show the Detail Page and Populate Data
+function viewDetail(id) {
+    const prod = products.find(p => p.id === id) || menuItems.find(p => p.id === id);
+    if (!prod) return;
+
+    // Populate Info
+    document.getElementById('detailImage').src = prod.imgUrl || "https://placehold.co/400x300/2c2c2c/FFAE00?text=Kopi+Jalanan";
+    document.getElementById('detailName').innerText = prod.name;
+    document.getElementById('detailPrice').innerText = `RM ${prod.price.toFixed(2)}`;
+    document.getElementById('detailDesc').innerText = prod.desc || "A delicious street brew.";
+    
+    // Generate Options
+    const container = document.getElementById('detailOptions');
+    container.innerHTML = '';
+
+    if (prod.category === 'coffee' || !prod.category) { // Default to coffee options
+        container.innerHTML = `
+            <div class="mb-6">
+                <label class="block text-gray-400 text-xs uppercase tracking-widest mb-3">Temperature</label>
+                <div class="flex gap-3">
+                    ${createOptionHTML('mood', 'Hot', 'Hot')}
+                    ${createOptionHTML('mood', 'Cold', 'Cold', true)}
+                </div>
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-400 text-xs uppercase tracking-widest mb-3">Size</label>
+                <div class="flex gap-3">
+                    ${createOptionHTML('size', 'S', 'Small')}
+                    ${createOptionHTML('size', 'M', 'Medium', true)}
+                    ${createOptionHTML('size', 'L', 'Large')}
+                </div>
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-400 text-xs uppercase tracking-widest mb-3">Sugar Level</label>
+                <div class="flex gap-3">
+                    ${createOptionHTML('sugar', '0%', '0%')}
+                    ${createOptionHTML('sugar', '50%', '50%', true)}
+                    ${createOptionHTML('sugar', '100%', '100%')}
+                </div>
+            </div>
+        `;
+    } else {
+        // Dessert Options
+        container.innerHTML = `
+             <div class="mb-6">
+                <label class="block text-gray-400 text-xs uppercase tracking-widest mb-3">Add-ons (+RM 0.50)</label>
+                <div class="flex flex-wrap gap-3">
+                    <label class="cursor-pointer border border-zinc-700 px-4 py-3 rounded hover:border-street-yellow has-[:checked]:bg-street-yellow has-[:checked]:text-black transition flex-1 text-center text-sm font-bold">
+                        <input type="checkbox" value="Choco Sauce" class="hidden opt-topping"> Choco Sauce
+                    </label>
+                    <label class="cursor-pointer border border-zinc-700 px-4 py-3 rounded hover:border-street-yellow has-[:checked]:bg-street-yellow has-[:checked]:text-black transition flex-1 text-center text-sm font-bold">
+                        <input type="checkbox" value="Caramel" class="hidden opt-topping"> Caramel
+                    </label>
+                </div>
+            </div>
+        `;
+    }
+
+    // Update the Add Button to call addCustomToCart
+    const addBtn = document.getElementById('detailAddBtn');
+    addBtn.onclick = () => addCustomToCart(prod.id);
+
+    showPage('detailPage');
 }
 
+// Add the configured item to cart
+function addCustomToCart(id) {
+    const prod = products.find(p => p.id === id) || menuItems.find(p => p.id === id);
+    let finalPrice = prod.price;
+    let details = [];
+
+    if (prod.category === 'coffee' || !prod.category) {
+        // Read selected options
+        const mood = document.querySelector('.mood-btn.bg-street-yellow')?.dataset.value || 'Cold';
+        const size = document.querySelector('.size-btn.bg-street-yellow')?.dataset.value || 'M';
+        const sugar = document.querySelector('.sugar-btn.bg-street-yellow')?.dataset.value || '50%';
+
+        // Pricing Logic
+        if(size === 'L') finalPrice += 2;
+        if(size === 'M') finalPrice += 1;
+
+        details.push(`${mood} | Size ${size} | Sugar ${sugar}`);
+    } else {
+        // Dessert Logic
+        document.querySelectorAll('.opt-topping:checked').forEach(t => { 
+            finalPrice += 0.5; 
+            details.push(t.value); 
+        });
+    }
+
+    const cartItem = {
+        ...prod,
+        finalPrice: finalPrice,
+        customization: details.join(", "),
+        cartId: Date.now() // Unique ID for cart item
+    };
+
+    cart.push(cartItem);
+    updateCart();
+    alert("Added to cart!");
+    showPage('menuPage');
+}
+
+// Helper to create round selection buttons
+function createOptionHTML(group, value, label, active=false) {
+    const activeClass = active ? "bg-street-yellow text-black border-street-yellow" : "bg-transparent text-gray-400 border-zinc-700 hover:border-street-yellow";
+    return `
+        <div onclick="selectOption('${group}', this)" 
+             data-value="${value}" 
+             class="option-btn ${group}-btn flex-1 py-2 border rounded text-center text-sm font-bold cursor-pointer transition ${activeClass}">
+             ${label}
+        </div>`;
+}
+
+// Global function to handle button selection click
+window.selectOption = function(group, el) {
+    // 1. Reset all buttons in this group
+    document.querySelectorAll(`.${group}-btn`).forEach(btn => {
+        btn.classList.remove("bg-street-yellow", "text-black", "border-street-yellow");
+        btn.classList.add("bg-transparent", "text-gray-400", "border-zinc-700");
+    });
+    
+    // 2. Activate clicked button
+    el.classList.remove("bg-transparent", "text-gray-400", "border-zinc-700");
+    el.classList.add("bg-street-yellow", "text-black", "border-street-yellow");
+};
+
+// ======================================================
+// 8. CART LOGIC
+// ======================================================
 function updateCart() {
     document.getElementById('cartCount').textContent = cart.length;
     const list = document.getElementById('cartList');
@@ -181,12 +305,18 @@ function updateCart() {
     list.innerHTML = "";
     let total = 0;
 
-    cart.forEach((item) => {
+    cart.forEach((item, index) => {
         total += item.finalPrice;
         list.innerHTML += `
-            <div class="flex justify-between border-b border-zinc-800 pb-2 mb-2 text-sm text-gray-300">
-                <span>${item.name}</span>
-                <span class="text-street-yellow">RM ${item.finalPrice.toFixed(2)}</span>
+            <div class="flex justify-between items-start border-b border-zinc-800 pb-3 mb-3">
+                <div>
+                    <div class="text-white font-bold">${item.name}</div>
+                    <div class="text-xs text-gray-500 mt-1">${item.customization}</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-street-yellow font-bold">RM ${item.finalPrice.toFixed(2)}</div>
+                    <button onclick="removeFromCart(${index})" class="text-xs text-red-500 hover:text-red-400 mt-1 underline">Remove</button>
+                </div>
             </div>
         `;
     });
@@ -195,8 +325,13 @@ function updateCart() {
     if(totalEl) totalEl.textContent = `RM ${total.toFixed(2)}`;
 }
 
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCart();
+}
+
 // ======================================================
-// 8. CHECKOUT
+// 9. CHECKOUT
 // ======================================================
 async function submitCheckout(event) {
     if(event) event.preventDefault();
@@ -213,10 +348,16 @@ async function submitCheckout(event) {
 
     try {
         const totalText = document.getElementById('checkoutTotal').innerText;
-        
+        const custName = document.getElementById('custName').value || currentUser.email;
+        const custPhone = document.getElementById('custPhone').value || "N/A";
+        const custAddress = document.getElementById('custAddress').value || "Pickup";
+
         await addDoc(collection(db, "orders"), {
             userId: currentUser.uid,
             email: currentUser.email,
+            customerName: custName,
+            customerPhone: custPhone,
+            deliveryAddress: custAddress,
             items: cart,
             total: totalText,
             createdAt: new Date().toISOString(),
@@ -235,27 +376,17 @@ async function submitCheckout(event) {
 }
 
 // ======================================================
-// 9. AUTH FUNCTIONS (DESKTOP & MOBILE)
+// 10. AUTH FUNCTIONS
 // ======================================================
 function updateNavUI(user) {
-    // Desktop
     const adminBtn = document.getElementById('navAdminBtn');
     const authBtn = document.getElementById('navAuthBtn');
-    
-    // Mobile
     const mobileAdminBtn = document.getElementById('mobileAdminBtn');
     const mobileAuthBtn = document.getElementById('mobileAuthBtn');
 
     if (user) {
-        // --- LOGGED IN ---
-        if(authBtn) {
-            authBtn.innerText = "Logout";
-            authBtn.classList.replace('bg-zinc-800', 'bg-red-600');
-        }
-        if(mobileAuthBtn) {
-            mobileAuthBtn.innerText = "Logout";
-            mobileAuthBtn.classList.add('text-red-500');
-        }
+        if(authBtn) { authBtn.innerText = "Logout"; authBtn.classList.replace('bg-zinc-800', 'bg-red-600'); }
+        if(mobileAuthBtn) { mobileAuthBtn.innerText = "Logout"; mobileAuthBtn.classList.add('text-red-500'); }
 
         if (isAdmin) {
             if(adminBtn) adminBtn.classList.remove('hidden');
@@ -265,16 +396,8 @@ function updateNavUI(user) {
             if(mobileAdminBtn) mobileAdminBtn.classList.add('hidden');
         }
     } else {
-        // --- LOGGED OUT ---
-        if(authBtn) {
-            authBtn.innerText = "Login";
-            authBtn.classList.replace('bg-red-600', 'bg-zinc-800');
-        }
-        if(mobileAuthBtn) {
-            mobileAuthBtn.innerText = "Login";
-            mobileAuthBtn.classList.remove('text-red-500');
-        }
-
+        if(authBtn) { authBtn.innerText = "Login"; authBtn.classList.replace('bg-red-600', 'bg-zinc-800'); }
+        if(mobileAuthBtn) { mobileAuthBtn.innerText = "Login"; mobileAuthBtn.classList.remove('text-red-500'); }
         if(adminBtn) adminBtn.classList.add('hidden');
         if(mobileAdminBtn) mobileAdminBtn.classList.add('hidden');
     }
@@ -288,27 +411,22 @@ function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const pass = document.getElementById('loginPass').value;
-
     signInWithEmailAndPassword(auth, email, pass)
         .then(() => showPage('homePage'))
-        .catch(err => alert("Login Failed: " + err.message));
+        .catch(err => alert(err.message));
 }
 
 function handleSignUp(e) {
     e.preventDefault();
     const email = document.getElementById('signupEmail').value;
     const pass = document.getElementById('signupPass').value;
-
     createUserWithEmailAndPassword(auth, email, pass)
-        .then(() => {
-            alert("Account created!");
-            showPage('homePage');
-        })
-        .catch(err => alert("Sign Up Failed: " + err.message));
+        .then(() => { alert("Account created!"); showPage('homePage'); })
+        .catch(err => alert(err.message));
 }
 
 // ======================================================
-// 10. ADMIN FUNCTIONS
+// 11. ADMIN FUNCTIONS
 // ======================================================
 async function addProduct(event) {
     event.preventDefault();
@@ -323,15 +441,13 @@ async function addProduct(event) {
 
     try {
         if (editingProductId) {
-            // UPDATE
             const productRef = doc(db, "products", editingProductId);
             await updateDoc(productRef, { name, price, stock, category, desc, imgUrl });
             alert("Product Updated!");
             editingProductId = null;
             document.querySelector('#adminForm button[type="submit"]').innerText = "ADD ITEM";
         } else {
-            // ADD
-            const newId = name.toLowerCase().replace(/\s+/g, '-');
+            const newId = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
             await setDoc(doc(db, "products", newId), {
                 id: newId, name, price, stock, category, desc, imgUrl,
                 createdAt: new Date().toISOString()
@@ -386,7 +502,7 @@ function renderAdminTable() {
 }
 
 // ======================================================
-// 11. MOBILE MENU FUNCTIONS
+// 12. MOBILE MENU FUNCTIONS
 // ======================================================
 function toggleMobileMenu() {
     const menu = document.getElementById('mobileMenu');
@@ -400,11 +516,10 @@ function mobileNavClick(pageId) {
 }
 
 // ======================================================
-// 12. EXPORTS
+// 13. EXPORTS
 // ======================================================
 Object.assign(window, {
     showPage,
-    addToCart,
     submitCheckout,
     handleAuthClick,
     handleLogin,
@@ -416,5 +531,9 @@ Object.assign(window, {
     renderMenu,
     renderAdminTable,
     toggleMobileMenu,
-    mobileNavClick
+    mobileNavClick,
+    viewDetail,         // NEW: For menu buttons
+    addCustomToCart,    // NEW: For detail page button
+    selectOption,       // NEW: For round buttons
+    removeFromCart      // NEW: For cart
 });

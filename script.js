@@ -673,5 +673,5 @@ window.submitCheckout = submitCheckout;
 window.filterMenu = filterMenu;
 window.selectOption = selectOption;
 window.loadOrderHistory = loadOrderHistory;
-window.updateCartUI = updateCartUI;
+
 

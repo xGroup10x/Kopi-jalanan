@@ -551,3 +551,4 @@ window.showPage = showPage;
 window.submitCheckout = submitCheckout;
 window.filterMenu = filterMenu;
 window.selectOption = selectOption;
+

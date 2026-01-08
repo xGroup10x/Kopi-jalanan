@@ -53,11 +53,11 @@ let activeCategory = "all";
 let isProcessingOrder = false;
 let editingProductId = null;
 
-// Fallback Menu
+// Fallback Menu (If Firebase is empty)
 const menuItems = [
-    { id: "kopi-o", name: "Kopi O", price: 3.00, category: "coffee" },
-    { id: "latte", name: "Latte", price: 5.00, category: "coffee" },
-    { id: "mocha", name: "Mocha", price: 6.00, category: "coffee" }
+    { id: "kopi-o", name: "Kopi O", price: 3.50, category: "coffee", desc: "Kopi O je" },
+    { id: "latte", name: "Latte", price: 5.00, category: "coffee", desc: "Smooth & Creamy" },
+    { id: "cucur", name: "Cucur Udang", price: 5.70, category: "dessert", desc: "Crispy prawn fritters" }
 ];
 
 // ======================================================
@@ -128,6 +128,9 @@ function renderMenu() {
     const grid = document.getElementById('menuGrid');
     if (!grid) return;
     grid.innerHTML = "";
+    
+    // Reduce gap by removing top margin
+    grid.className = "flex flex-col gap-3 pb-20 mt-4"; 
 
     const dataSource = products.length ? products : menuItems;
 
@@ -140,36 +143,43 @@ function renderMenu() {
         return;
     }
 
-    // --- UPDATED: HORIZONTAL CARD LAYOUT (Like Image 2) ---
+    // --- HORIZONTAL CARD LAYOUT (Matches Image 2) ---
     filteredData.forEach(item => {
         const imgUrl = item.imgUrl || "https://placehold.co/400x300/2c2c2c/FFAE00?text=Kopi+Jalanan";
         
         const card = document.createElement('div');
-        // Horizontal Layout: Image Left, Content Right
-        card.className = "flex gap-4 p-4 bg-zinc-900 border border-zinc-800 rounded-xl items-center shadow-md hover:border-street-yellow transition cursor-pointer";
-        card.onclick = () => viewDetail(item.id); // Click anywhere to open detail
+        // Horizontal Layout: Image Left, Content Middle, Button Right
+        card.className = "flex gap-4 p-3 bg-zinc-900 border border-zinc-800 rounded-xl items-center shadow-md hover:border-street-yellow transition cursor-pointer";
+        
+        // Clicking the whole card opens details
+        card.onclick = (e) => {
+            // Prevent triggering if clicking the specific button (optional logic, but here we just open detail)
+            viewDetail(item.id);
+        };
 
         card.innerHTML = `
-            <div class="w-24 h-24 flex-shrink-0 bg-black rounded-lg overflow-hidden">
+            <div class="w-20 h-20 md:w-24 md:h-24 flex-shrink-0 bg-black rounded-lg overflow-hidden">
                 <img src="${imgUrl}" class="w-full h-full object-cover">
             </div>
 
             <div class="flex-1 min-w-0">
-                <h3 class="font-oswald text-lg text-white uppercase truncate">${item.name}</h3>
-                <p class="text-xs text-gray-400 line-clamp-2 leading-relaxed mt-1">${item.desc || "Delicious street brew."}</p>
-                <div class="text-street-yellow font-bold mt-2">RM ${item.price.toFixed(2)}</div>
+                <h3 class="font-oswald text-lg text-white uppercase truncate tracking-wide">${item.name}</h3>
+                <p class="text-xs text-gray-400 line-clamp-2 leading-relaxed mt-0.5">${item.desc || "Delicious street brew."}</p>
+                <div class="text-street-yellow font-bold mt-1 text-md">RM ${item.price.toFixed(2)}</div>
             </div>
 
-            <button class="w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700 text-white flex items-center justify-center hover:bg-street-yellow hover:text-black hover:border-street-yellow transition shadow-lg">
-                <i class="fas fa-plus"></i>
-            </button>
+            <div class="flex-shrink-0">
+                <button class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-zinc-800 border border-zinc-700 text-white flex items-center justify-center hover:bg-street-yellow hover:text-black hover:border-street-yellow transition shadow-lg">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
         `;
         grid.appendChild(card);
     });
 }
 
 // ======================================================
-// 7. PRODUCT DETAIL & CUSTOMIZATION (Like Image 3)
+// 7. PRODUCT DETAIL & CUSTOMIZATION (Matches Image 3)
 // ======================================================
 
 function viewDetail(id) {
@@ -180,7 +190,7 @@ function viewDetail(id) {
     document.getElementById('detailImage').src = prod.imgUrl || "https://placehold.co/400x300/2c2c2c/FFAE00?text=Kopi+Jalanan";
     document.getElementById('detailName').innerText = prod.name;
     document.getElementById('detailPrice').innerText = `RM ${prod.price.toFixed(2)}`;
-    document.getElementById('detailDesc').innerText = prod.desc || "A delicious street brew.";
+    document.getElementById('detailDesc').innerText = prod.desc || "";
     
     // Generate Options
     const container = document.getElementById('detailOptions');
@@ -188,16 +198,16 @@ function viewDetail(id) {
 
     if (prod.category === 'coffee' || !prod.category) { // Default to coffee options
         container.innerHTML = `
-            <div class="mb-6">
-                <label class="block text-gray-400 text-sm font-bold mb-3">Mood</label>
+            <div class="mb-5">
+                <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Mood</label>
                 <div class="flex gap-4">
                     ${createIconOption('mood', 'Hot', 'fas fa-fire')}
                     ${createIconOption('mood', 'Cold', 'fas fa-snowflake', true)}
                 </div>
             </div>
 
-            <div class="mb-6">
-                <label class="block text-gray-400 text-sm font-bold mb-3">Size</label>
+            <div class="mb-5">
+                <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Size</label>
                 <div class="flex gap-4">
                     ${createCircleOption('size', 'S', 'S')}
                     ${createCircleOption('size', 'M', 'M', true)}
@@ -205,8 +215,8 @@ function viewDetail(id) {
                 </div>
             </div>
 
-            <div class="mb-6">
-                <label class="block text-gray-400 text-sm font-bold mb-3">Sugar</label>
+            <div class="mb-5">
+                <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Sugar</label>
                 <div class="flex gap-4">
                     ${createCircleOption('sugar', '30%', '30%')}
                     ${createCircleOption('sugar', '50%', '50%', true)}
@@ -214,8 +224,8 @@ function viewDetail(id) {
                 </div>
             </div>
 
-            <div class="mb-6">
-                <label class="block text-gray-400 text-sm font-bold mb-3">Ice</label>
+            <div class="mb-5">
+                <label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Ice</label>
                 <div class="flex gap-4">
                     ${createCircleOption('ice', '30%', '30%')}
                     ${createCircleOption('ice', '50%', '50%', true)}
@@ -224,25 +234,25 @@ function viewDetail(id) {
             </div>
         `;
     } else {
-        // Dessert Options (Checkbox Style)
+        // Dessert Options
         container.innerHTML = `
              <div class="mb-6">
-                <label class="block text-gray-400 text-sm font-bold mb-3">Add-ons (+RM 0.50)</label>
+                <label class="block text-gray-400 text-xs font-bold mb-3 uppercase">Add-ons</label>
                 <div class="flex flex-col gap-3">
-                    <label class="flex items-center gap-3 p-3 border border-zinc-700 rounded-lg cursor-pointer hover:border-street-yellow transition">
+                    <label class="flex items-center justify-between p-3 border border-zinc-700 rounded-lg cursor-pointer hover:border-street-yellow transition bg-zinc-900/50">
+                        <span class="text-white text-sm">Chocolate Sauce</span>
                         <input type="checkbox" value="Choco Sauce" class="opt-topping w-5 h-5 accent-street-yellow"> 
-                        <span class="text-white">Chocolate Sauce</span>
                     </label>
-                    <label class="flex items-center gap-3 p-3 border border-zinc-700 rounded-lg cursor-pointer hover:border-street-yellow transition">
+                    <label class="flex items-center justify-between p-3 border border-zinc-700 rounded-lg cursor-pointer hover:border-street-yellow transition bg-zinc-900/50">
+                        <span class="text-white text-sm">Caramel Drizzle</span>
                         <input type="checkbox" value="Caramel" class="opt-topping w-5 h-5 accent-street-yellow"> 
-                        <span class="text-white">Caramel Drizzle</span>
                     </label>
                 </div>
             </div>
         `;
     }
 
-    // Update the Add Button
+    // Update Add Button
     const addBtn = document.getElementById('detailAddBtn');
     addBtn.innerText = "ADD TO ORDER"; 
     addBtn.onclick = () => addCustomToCart(prod.id);
@@ -250,28 +260,27 @@ function viewDetail(id) {
     showPage('detailPage');
 }
 
-// Add the configured item to cart
+// Add Item Logic
 function addCustomToCart(id) {
     const prod = products.find(p => p.id === id) || menuItems.find(p => p.id === id);
     let finalPrice = prod.price;
     let details = [];
 
     if (prod.category === 'coffee' || !prod.category) {
-        // Read selected options
         const mood = document.querySelector('.mood-btn.bg-street-yellow')?.dataset.value || 'Cold';
         const size = document.querySelector('.size-btn.bg-street-yellow')?.dataset.value || 'M';
         const sugar = document.querySelector('.sugar-btn.bg-street-yellow')?.dataset.value || '50%';
         const ice = document.querySelector('.ice-btn.bg-street-yellow')?.dataset.value || '50%';
 
-        // Pricing Logic
-        if(size === 'L') finalPrice += 2;
-        if(size === 'M') finalPrice += 1;
+        // Price adjustments
+        if(size === 'L') finalPrice += 2.00;
+        if(size === 'M') finalPrice += 1.00;
 
-        details.push(`${mood} | Size ${size} | Sugar ${sugar} | Ice ${ice}`);
+        details.push(`${mood} | Size ${size}`);
+        details.push(`Sugar ${sugar} | Ice ${ice}`);
     } else {
-        // Dessert Logic
         document.querySelectorAll('.opt-topping:checked').forEach(t => { 
-            finalPrice += 0.5; 
+            finalPrice += 0.50; 
             details.push(t.value); 
         });
     }
@@ -285,49 +294,50 @@ function addCustomToCart(id) {
 
     cart.push(cartItem);
     updateCart();
-    // alert("Added to cart!"); // Optional: Remove alert for faster flow
+    // Go back to menu automatically
     showPage('menuPage');
 }
 
-// --- HELPER 1: CIRCLE BUTTONS (Size, Sugar, Ice) ---
+// --- HELPERS FOR CIRCULAR BUTTONS ---
+
+// 1. Text Circles (Size, Sugar, Ice)
 function createCircleOption(group, value, label, active=false) {
     const activeClass = active 
         ? "bg-street-yellow text-black border-street-yellow" 
-        : "bg-transparent text-gray-400 border-zinc-600 hover:border-street-yellow";
+        : "bg-transparent text-gray-400 border-zinc-600 hover:border-gray-400";
     
     return `
         <div onclick="selectOption('${group}', this)" 
              data-value="${value}" 
-             class="option-btn ${group}-btn w-12 h-12 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition ${activeClass}">
+             class="option-btn ${group}-btn w-12 h-12 rounded-full border flex items-center justify-center text-xs font-bold cursor-pointer transition ${activeClass}">
              ${label}
         </div>`;
 }
 
-// --- HELPER 2: ICON BUTTONS (Mood) ---
+// 2. Icon Circles (Mood)
 function createIconOption(group, value, iconClass, active=false) {
     const activeClass = active 
         ? "bg-street-yellow text-black border-street-yellow" 
-        : "bg-zinc-800 text-gray-400 border-zinc-600 hover:border-street-yellow";
+        : "bg-zinc-800 text-gray-400 border-zinc-600 hover:border-gray-400";
 
     return `
         <div onclick="selectOption('${group}', this)" 
              data-value="${value}" 
-             class="option-btn ${group}-btn w-14 h-14 rounded-full border-2 flex items-center justify-center text-xl cursor-pointer transition ${activeClass}">
+             class="option-btn ${group}-btn w-12 h-12 rounded-full border flex items-center justify-center text-lg cursor-pointer transition ${activeClass}">
              <i class="${iconClass}"></i>
         </div>`;
 }
 
-// Global function to handle button selection click
+// Global Selector Logic
 window.selectOption = function(group, el) {
-    // 1. Reset all buttons in this group
+    // Reset siblings
     document.querySelectorAll(`.${group}-btn`).forEach(btn => {
         btn.classList.remove("bg-street-yellow", "text-black", "border-street-yellow");
         btn.classList.add("bg-transparent", "text-gray-400", "border-zinc-600");
-        // Fix background for icon buttons
         if(group === 'mood') btn.classList.add("bg-zinc-800"); 
     });
     
-    // 2. Activate clicked button
+    // Activate current
     el.classList.remove("bg-transparent", "text-gray-400", "border-zinc-600", "bg-zinc-800");
     el.classList.add("bg-street-yellow", "text-black", "border-street-yellow");
 };
@@ -348,12 +358,12 @@ function updateCart() {
         list.innerHTML += `
             <div class="flex justify-between items-start border-b border-zinc-800 pb-3 mb-3">
                 <div>
-                    <div class="text-white font-bold">${item.name}</div>
+                    <div class="text-white font-bold text-sm">${item.name}</div>
                     <div class="text-xs text-gray-500 mt-1">${item.customization}</div>
                 </div>
                 <div class="text-right">
-                    <div class="text-street-yellow font-bold">RM ${item.finalPrice.toFixed(2)}</div>
-                    <button onclick="removeFromCart(${index})" class="text-xs text-red-500 hover:text-red-400 mt-1 underline">Remove</button>
+                    <div class="text-street-yellow font-bold text-sm">RM ${item.finalPrice.toFixed(2)}</div>
+                    <button onclick="removeFromCart(${index})" class="text-[10px] text-red-500 hover:text-red-400 mt-1 uppercase tracking-wider">Remove</button>
                 </div>
             </div>
         `;

@@ -51,7 +51,7 @@ let currentUser = null;
 let isAdmin = false;
 let activeCategory = "all";
 let isProcessingOrder = false;
-let editingProductId = null; // NEW: Tracks which product we are editing
+let editingProductId = null;
 
 // Fallback Menu
 const menuItems = [
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
     onSnapshot(collection(db, "products"), (snap) => {
         products = snap.docs.map(d => ({ ...d.data(), id: d.id }));
         renderMenu();
-        renderAdminTable(); // Make sure admin table updates live
+        renderAdminTable();
     });
 
     // Auth listener
@@ -281,10 +281,8 @@ function handleSignUp(e) {
 }
 
 // ======================================================
-// 10. ADMIN FUNCTIONS (EDIT WHOLE PRODUCT)
+// 10. ADMIN FUNCTIONS
 // ======================================================
-
-// Handles BOTH Adding New and Updating Existing
 async function addProduct(event) {
     event.preventDefault();
     if (!currentUser || !isAdmin) return alert("Admins Only!");
@@ -298,19 +296,14 @@ async function addProduct(event) {
 
     try {
         if (editingProductId) {
-            // --- UPDATE MODE ---
+            // UPDATE
             const productRef = doc(db, "products", editingProductId);
-            await updateDoc(productRef, {
-                name, price, stock, category, desc, imgUrl
-            });
+            await updateDoc(productRef, { name, price, stock, category, desc, imgUrl });
             alert("Product Updated!");
-            
-            // Exit Edit Mode
             editingProductId = null;
             document.querySelector('#adminForm button[type="submit"]').innerText = "ADD ITEM";
-            
         } else {
-            // --- ADD MODE ---
+            // ADD
             const newId = name.toLowerCase().replace(/\s+/g, '-');
             await setDoc(doc(db, "products", newId), {
                 id: newId, name, price, stock, category, desc, imgUrl,
@@ -324,27 +317,18 @@ async function addProduct(event) {
     }
 }
 
-// Triggers Edit Mode (Fills the form)
 function editProduct(id) {
     const p = products.find(prod => prod.id === id);
     if(!p) return;
-
-    // 1. Fill Form
     document.getElementById('prodName').value = p.name;
     document.getElementById('prodPrice').value = p.price;
     document.getElementById('prodStock').value = p.stock;
     document.getElementById('prodCat').value = p.category;
     document.getElementById('prodDesc').value = p.desc;
     document.getElementById('prodImg').value = p.imgUrl;
-
-    // 2. Set Mode
     editingProductId = id;
-    
-    // 3. Change Button Text
     const submitBtn = document.querySelector('#adminForm button[type="submit"]');
     if(submitBtn) submitBtn.innerText = "UPDATE ITEM";
-
-    // 4. Scroll up to form
     document.getElementById('adminForm').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -357,34 +341,39 @@ function renderAdminTable() {
     const tbody = document.getElementById('adminTableBody');
     if(!tbody) return;
     tbody.innerHTML = '';
-
     products.forEach(p => {
         const stockColor = (p.stock < 10) ? 'text-red-500' : 'text-street-yellow';
-        
         tbody.innerHTML += `
             <tr class="border-b border-zinc-700">
                 <td class="p-3">
                     ${p.name}
                     <div class="text-xs text-gray-500">${p.category || 'No Cat'}</div>
                 </td>
-                <td class="p-3">
-                    Qty: <span class="${stockColor} font-bold">${p.stock || 0}</span>
-                </td>
+                <td class="p-3">Qty: <span class="${stockColor} font-bold">${p.stock || 0}</span></td>
                 <td class="p-3 text-right whitespace-nowrap">
-                    <button onclick="editProduct('${p.id}')" class="text-blue-500 hover:text-blue-400 mr-4" title="Edit">
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
-
-                    <button onclick="deleteProduct('${p.id}')" class="text-red-500 hover:text-red-400" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    <button onclick="editProduct('${p.id}')" class="text-blue-500 hover:text-blue-400 mr-4"><i class="fas fa-edit"></i> Edit</button>
+                    <button onclick="deleteProduct('${p.id}')" class="text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
                 </td>
             </tr>`;
     });
 }
 
 // ======================================================
-// 11. EXPORTS
+// 11. MOBILE MENU FUNCTIONS (NEW)
+// ======================================================
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('hidden');
+    menu.classList.toggle('flex');
+}
+
+function mobileNavClick(pageId) {
+    showPage(pageId);
+    toggleMobileMenu();
+}
+
+// ======================================================
+// 12. EXPORTS
 // ======================================================
 Object.assign(window, {
     showPage,
@@ -394,9 +383,11 @@ Object.assign(window, {
     handleLogin,
     handleSignUp,
     filterMenu,
-    addProduct,     // Handles Add & Update
+    addProduct,
     deleteProduct,
-    editProduct,    // New function
+    editProduct,
     renderMenu,
-    renderAdminTable
+    renderAdminTable,
+    toggleMobileMenu, // Added
+    mobileNavClick    // Added
 });

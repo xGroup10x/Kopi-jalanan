@@ -1,6 +1,7 @@
 // --- 1. FIREBASE IMPORTS ---
+// Added 'getDoc' to the imports below
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, addDoc, deleteDoc, updateDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, addDoc, deleteDoc, updateDoc, increment, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // --- 2. CONFIGURATION ---
@@ -23,9 +24,7 @@ let cart = [];
 let products = [];
 let currentUser = null;
 let activeCategory = 'all'; 
-
-// ⚠️ ADMIN EMAIL
-const ADMIN_EMAIL = "kopijalanan@gmail.com"; 
+let isAdmin = false; // Changed: We will set this based on database check
 
 // --- 4. STARTUP LISTENERS ---
 document.addEventListener("DOMContentLoaded", () => {
@@ -42,9 +41,26 @@ document.addEventListener("DOMContentLoaded", () => {
         renderAdminTable();
     });
 
-    // B. Listen for Auth Changes
-    onAuthStateChanged(auth, (user) => {
+    // B. Listen for Auth Changes (Updated for DB Check)
+    onAuthStateChanged(auth, async (user) => {
         currentUser = user;
+        isAdmin = false; // Reset to false by default
+
+        if (user) {
+            try {
+                // Check if a document with this email exists in 'admins' collection
+                const adminRef = doc(db, "admins", user.email);
+                const docSnap = await getDoc(adminRef);
+                
+                if (docSnap.exists()) {
+                    isAdmin = true;
+                    console.log("Admin privileges active");
+                }
+            } catch (error) {
+                console.log("Error checking admin status:", error);
+            }
+        }
+        
         updateNavUI(user);
     });
 });
@@ -59,8 +75,8 @@ function updateNavUI(user) {
         authBtn.innerText = "Logout";
         authBtn.classList.replace('bg-zinc-800', 'bg-red-600');
         
-        // Show Admin button ONLY if email matches
-        if (user.email === ADMIN_EMAIL) {
+        // Updated: Check the boolean variable instead of hardcoded string
+        if (isAdmin) {
             adminBtn.classList.remove('hidden');
         } else {
             adminBtn.classList.add('hidden');
@@ -441,7 +457,8 @@ async function submitCheckout(e) {
 
 async function addProduct(event) {
     event.preventDefault();
-    if (!currentUser || currentUser.email !== ADMIN_EMAIL) return alert("Admins Only!");
+    // Updated: Check boolean variable
+    if (!currentUser || !isAdmin) return alert("Admins Only!");
 
     const name = document.getElementById('prodName').value;
     const price = parseFloat(document.getElementById('prodPrice').value);
@@ -462,7 +479,8 @@ async function addProduct(event) {
 }
 
 async function deleteProduct(id) {
-    if (!currentUser || currentUser.email !== ADMIN_EMAIL) return alert("Admins Only!");
+    // Updated: Check boolean variable
+    if (!currentUser || !isAdmin) return alert("Admins Only!");
     if(confirm("Delete this item?")) await deleteDoc(doc(db, "products", id));
 }
 
@@ -517,4 +535,3 @@ window.showPage = showPage;
 window.submitCheckout = submitCheckout;
 window.filterMenu = filterMenu;
 window.selectOption = selectOption;
-

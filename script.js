@@ -235,21 +235,48 @@ async function submitCheckout(event) {
 }
 
 // ======================================================
-// 9. AUTH FUNCTIONS
+// 9. AUTH FUNCTIONS (DESKTOP & MOBILE)
 // ======================================================
 function updateNavUI(user) {
+    // Desktop
     const adminBtn = document.getElementById('navAdminBtn');
     const authBtn = document.getElementById('navAuthBtn');
-    if (!authBtn) return;
+    
+    // Mobile
+    const mobileAdminBtn = document.getElementById('mobileAdminBtn');
+    const mobileAuthBtn = document.getElementById('mobileAuthBtn');
 
     if (user) {
-        authBtn.innerText = "Logout";
-        authBtn.classList.replace('bg-zinc-800', 'bg-red-600');
-        if(adminBtn) isAdmin ? adminBtn.classList.remove('hidden') : adminBtn.classList.add('hidden');
+        // --- LOGGED IN ---
+        if(authBtn) {
+            authBtn.innerText = "Logout";
+            authBtn.classList.replace('bg-zinc-800', 'bg-red-600');
+        }
+        if(mobileAuthBtn) {
+            mobileAuthBtn.innerText = "Logout";
+            mobileAuthBtn.classList.add('text-red-500');
+        }
+
+        if (isAdmin) {
+            if(adminBtn) adminBtn.classList.remove('hidden');
+            if(mobileAdminBtn) mobileAdminBtn.classList.remove('hidden');
+        } else {
+            if(adminBtn) adminBtn.classList.add('hidden');
+            if(mobileAdminBtn) mobileAdminBtn.classList.add('hidden');
+        }
     } else {
-        authBtn.innerText = "Login";
-        authBtn.classList.replace('bg-red-600', 'bg-zinc-800');
+        // --- LOGGED OUT ---
+        if(authBtn) {
+            authBtn.innerText = "Login";
+            authBtn.classList.replace('bg-red-600', 'bg-zinc-800');
+        }
+        if(mobileAuthBtn) {
+            mobileAuthBtn.innerText = "Login";
+            mobileAuthBtn.classList.remove('text-red-500');
+        }
+
         if(adminBtn) adminBtn.classList.add('hidden');
+        if(mobileAdminBtn) mobileAdminBtn.classList.add('hidden');
     }
 }
 
@@ -359,7 +386,7 @@ function renderAdminTable() {
 }
 
 // ======================================================
-// 11. MOBILE MENU FUNCTIONS (NEW)
+// 11. MOBILE MENU FUNCTIONS
 // ======================================================
 function toggleMobileMenu() {
     const menu = document.getElementById('mobileMenu');
@@ -388,6 +415,6 @@ Object.assign(window, {
     editProduct,
     renderMenu,
     renderAdminTable,
-    toggleMobileMenu, // Added
-    mobileNavClick    // Added
+    toggleMobileMenu,
+    mobileNavClick
 });

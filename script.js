@@ -140,34 +140,38 @@ function renderMenu() {
         return;
     }
 
+    // --- UPDATED: HORIZONTAL CARD LAYOUT (Like Image 2) ---
     filteredData.forEach(item => {
         const imgUrl = item.imgUrl || "https://placehold.co/400x300/2c2c2c/FFAE00?text=Kopi+Jalanan";
         
         const card = document.createElement('div');
-        card.className = "bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-lg flex flex-col";
+        // Horizontal Layout: Image Left, Content Right
+        card.className = "flex gap-4 p-4 bg-zinc-900 border border-zinc-800 rounded-xl items-center shadow-md hover:border-street-yellow transition cursor-pointer";
+        card.onclick = () => viewDetail(item.id); // Click anywhere to open detail
+
         card.innerHTML = `
-            <div class="h-48 bg-black relative">
+            <div class="w-24 h-24 flex-shrink-0 bg-black rounded-lg overflow-hidden">
                 <img src="${imgUrl}" class="w-full h-full object-cover">
             </div>
-            <div class="p-4 flex flex-col flex-grow">
-                <h3 class="font-oswald text-xl mb-1 text-white uppercase">${item.name}</h3>
-                <p class="text-street-yellow font-bold mb-4">RM ${item.price.toFixed(2)}</p>
-                <div class="mt-auto">
-                    <button onclick="viewDetail('${item.id}')" class="w-full bg-street-yellow text-black font-bold py-3 uppercase hover:bg-white transition tracking-widest rounded-sm">
-                        Customize
-                    </button>
-                </div>
+
+            <div class="flex-1 min-w-0">
+                <h3 class="font-oswald text-lg text-white uppercase truncate">${item.name}</h3>
+                <p class="text-xs text-gray-400 line-clamp-2 leading-relaxed mt-1">${item.desc || "Delicious street brew."}</p>
+                <div class="text-street-yellow font-bold mt-2">RM ${item.price.toFixed(2)}</div>
             </div>
+
+            <button class="w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700 text-white flex items-center justify-center hover:bg-street-yellow hover:text-black hover:border-street-yellow transition shadow-lg">
+                <i class="fas fa-plus"></i>
+            </button>
         `;
         grid.appendChild(card);
     });
 }
 
 // ======================================================
-// 7. PRODUCT DETAIL & CUSTOMIZATION (NEW LOGIC)
+// 7. PRODUCT DETAIL & CUSTOMIZATION (Like Image 3)
 // ======================================================
 
-// Show the Detail Page and Populate Data
 function viewDetail(id) {
     const prod = products.find(p => p.id === id) || menuItems.find(p => p.id === id);
     if (!prod) return;
@@ -185,48 +189,62 @@ function viewDetail(id) {
     if (prod.category === 'coffee' || !prod.category) { // Default to coffee options
         container.innerHTML = `
             <div class="mb-6">
-                <label class="block text-gray-400 text-xs uppercase tracking-widest mb-3">Temperature</label>
-                <div class="flex gap-3">
-                    ${createOptionHTML('mood', 'Hot', 'Hot')}
-                    ${createOptionHTML('mood', 'Cold', 'Cold', true)}
+                <label class="block text-gray-400 text-sm font-bold mb-3">Mood</label>
+                <div class="flex gap-4">
+                    ${createIconOption('mood', 'Hot', 'fas fa-fire')}
+                    ${createIconOption('mood', 'Cold', 'fas fa-snowflake', true)}
                 </div>
             </div>
+
             <div class="mb-6">
-                <label class="block text-gray-400 text-xs uppercase tracking-widest mb-3">Size</label>
-                <div class="flex gap-3">
-                    ${createOptionHTML('size', 'S', 'Small')}
-                    ${createOptionHTML('size', 'M', 'Medium', true)}
-                    ${createOptionHTML('size', 'L', 'Large')}
+                <label class="block text-gray-400 text-sm font-bold mb-3">Size</label>
+                <div class="flex gap-4">
+                    ${createCircleOption('size', 'S', 'S')}
+                    ${createCircleOption('size', 'M', 'M', true)}
+                    ${createCircleOption('size', 'L', 'L')}
                 </div>
             </div>
+
             <div class="mb-6">
-                <label class="block text-gray-400 text-xs uppercase tracking-widest mb-3">Sugar Level</label>
-                <div class="flex gap-3">
-                    ${createOptionHTML('sugar', '0%', '0%')}
-                    ${createOptionHTML('sugar', '50%', '50%', true)}
-                    ${createOptionHTML('sugar', '100%', '100%')}
+                <label class="block text-gray-400 text-sm font-bold mb-3">Sugar</label>
+                <div class="flex gap-4">
+                    ${createCircleOption('sugar', '30%', '30%')}
+                    ${createCircleOption('sugar', '50%', '50%', true)}
+                    ${createCircleOption('sugar', '70%', '70%')}
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-400 text-sm font-bold mb-3">Ice</label>
+                <div class="flex gap-4">
+                    ${createCircleOption('ice', '30%', '30%')}
+                    ${createCircleOption('ice', '50%', '50%', true)}
+                    ${createCircleOption('ice', '70%', '70%')}
                 </div>
             </div>
         `;
     } else {
-        // Dessert Options
+        // Dessert Options (Checkbox Style)
         container.innerHTML = `
              <div class="mb-6">
-                <label class="block text-gray-400 text-xs uppercase tracking-widest mb-3">Add-ons (+RM 0.50)</label>
-                <div class="flex flex-wrap gap-3">
-                    <label class="cursor-pointer border border-zinc-700 px-4 py-3 rounded hover:border-street-yellow has-[:checked]:bg-street-yellow has-[:checked]:text-black transition flex-1 text-center text-sm font-bold">
-                        <input type="checkbox" value="Choco Sauce" class="hidden opt-topping"> Choco Sauce
+                <label class="block text-gray-400 text-sm font-bold mb-3">Add-ons (+RM 0.50)</label>
+                <div class="flex flex-col gap-3">
+                    <label class="flex items-center gap-3 p-3 border border-zinc-700 rounded-lg cursor-pointer hover:border-street-yellow transition">
+                        <input type="checkbox" value="Choco Sauce" class="opt-topping w-5 h-5 accent-street-yellow"> 
+                        <span class="text-white">Chocolate Sauce</span>
                     </label>
-                    <label class="cursor-pointer border border-zinc-700 px-4 py-3 rounded hover:border-street-yellow has-[:checked]:bg-street-yellow has-[:checked]:text-black transition flex-1 text-center text-sm font-bold">
-                        <input type="checkbox" value="Caramel" class="hidden opt-topping"> Caramel
+                    <label class="flex items-center gap-3 p-3 border border-zinc-700 rounded-lg cursor-pointer hover:border-street-yellow transition">
+                        <input type="checkbox" value="Caramel" class="opt-topping w-5 h-5 accent-street-yellow"> 
+                        <span class="text-white">Caramel Drizzle</span>
                     </label>
                 </div>
             </div>
         `;
     }
 
-    // Update the Add Button to call addCustomToCart
+    // Update the Add Button
     const addBtn = document.getElementById('detailAddBtn');
+    addBtn.innerText = "ADD TO ORDER"; 
     addBtn.onclick = () => addCustomToCart(prod.id);
 
     showPage('detailPage');
@@ -243,12 +261,13 @@ function addCustomToCart(id) {
         const mood = document.querySelector('.mood-btn.bg-street-yellow')?.dataset.value || 'Cold';
         const size = document.querySelector('.size-btn.bg-street-yellow')?.dataset.value || 'M';
         const sugar = document.querySelector('.sugar-btn.bg-street-yellow')?.dataset.value || '50%';
+        const ice = document.querySelector('.ice-btn.bg-street-yellow')?.dataset.value || '50%';
 
         // Pricing Logic
         if(size === 'L') finalPrice += 2;
         if(size === 'M') finalPrice += 1;
 
-        details.push(`${mood} | Size ${size} | Sugar ${sugar}`);
+        details.push(`${mood} | Size ${size} | Sugar ${sugar} | Ice ${ice}`);
     } else {
         // Dessert Logic
         document.querySelectorAll('.opt-topping:checked').forEach(t => { 
@@ -261,23 +280,40 @@ function addCustomToCart(id) {
         ...prod,
         finalPrice: finalPrice,
         customization: details.join(", "),
-        cartId: Date.now() // Unique ID for cart item
+        cartId: Date.now()
     };
 
     cart.push(cartItem);
     updateCart();
-    alert("Added to cart!");
+    // alert("Added to cart!"); // Optional: Remove alert for faster flow
     showPage('menuPage');
 }
 
-// Helper to create round selection buttons
-function createOptionHTML(group, value, label, active=false) {
-    const activeClass = active ? "bg-street-yellow text-black border-street-yellow" : "bg-transparent text-gray-400 border-zinc-700 hover:border-street-yellow";
+// --- HELPER 1: CIRCLE BUTTONS (Size, Sugar, Ice) ---
+function createCircleOption(group, value, label, active=false) {
+    const activeClass = active 
+        ? "bg-street-yellow text-black border-street-yellow" 
+        : "bg-transparent text-gray-400 border-zinc-600 hover:border-street-yellow";
+    
     return `
         <div onclick="selectOption('${group}', this)" 
              data-value="${value}" 
-             class="option-btn ${group}-btn flex-1 py-2 border rounded text-center text-sm font-bold cursor-pointer transition ${activeClass}">
+             class="option-btn ${group}-btn w-12 h-12 rounded-full border-2 flex items-center justify-center text-xs font-bold cursor-pointer transition ${activeClass}">
              ${label}
+        </div>`;
+}
+
+// --- HELPER 2: ICON BUTTONS (Mood) ---
+function createIconOption(group, value, iconClass, active=false) {
+    const activeClass = active 
+        ? "bg-street-yellow text-black border-street-yellow" 
+        : "bg-zinc-800 text-gray-400 border-zinc-600 hover:border-street-yellow";
+
+    return `
+        <div onclick="selectOption('${group}', this)" 
+             data-value="${value}" 
+             class="option-btn ${group}-btn w-14 h-14 rounded-full border-2 flex items-center justify-center text-xl cursor-pointer transition ${activeClass}">
+             <i class="${iconClass}"></i>
         </div>`;
 }
 
@@ -286,11 +322,13 @@ window.selectOption = function(group, el) {
     // 1. Reset all buttons in this group
     document.querySelectorAll(`.${group}-btn`).forEach(btn => {
         btn.classList.remove("bg-street-yellow", "text-black", "border-street-yellow");
-        btn.classList.add("bg-transparent", "text-gray-400", "border-zinc-700");
+        btn.classList.add("bg-transparent", "text-gray-400", "border-zinc-600");
+        // Fix background for icon buttons
+        if(group === 'mood') btn.classList.add("bg-zinc-800"); 
     });
     
     // 2. Activate clicked button
-    el.classList.remove("bg-transparent", "text-gray-400", "border-zinc-700");
+    el.classList.remove("bg-transparent", "text-gray-400", "border-zinc-600", "bg-zinc-800");
     el.classList.add("bg-street-yellow", "text-black", "border-street-yellow");
 };
 
@@ -532,8 +570,8 @@ Object.assign(window, {
     renderAdminTable,
     toggleMobileMenu,
     mobileNavClick,
-    viewDetail,         // NEW: For menu buttons
-    addCustomToCart,    // NEW: For detail page button
-    selectOption,       // NEW: For round buttons
-    removeFromCart      // NEW: For cart
+    viewDetail,
+    addCustomToCart,
+    selectOption,
+    removeFromCart
 });

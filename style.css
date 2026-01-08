@@ -30,29 +30,3 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: #FFAE00;
 }
-
-/* --- ANIMATIONS --- */
-
-/* Cart Count Pop Animation */
-@keyframes cartPop {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.4); color: #FFAE00; }
-    100% { transform: scale(1); }
-}
-
-.animate-pop {
-    animation: cartPop 0.4s ease-out;
-}
-
-/* Skeleton Pulse Animation */
-@keyframes pulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-}
-
-.skeleton {
-    background: #27272a; /* matches zinc-800 */
-    border-radius: 8px;
-    animation: pulse 1.5s infinite ease-in-out;
-}
-

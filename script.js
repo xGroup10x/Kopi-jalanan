@@ -4,19 +4,30 @@
 const pages = document.querySelectorAll('.page-section');
 
 function showPage(pageId) {
+    // --- SECURITY GUARD ---
+    // Prevent access to Admin Page if not logged in as Admin
+    if (pageId === 'adminPage' && !isAdmin) {
+        alert("Access Denied: Admins Only.");
+        showPage('homePage'); 
+        return; 
+    }
+
     pages.forEach(p => p.classList.add('hidden'));
     const target = document.getElementById(pageId);
     if(target) target.classList.remove('hidden');
+
     updateActiveNav(pageId);
     window.scrollTo(0, 0);
 }
 
 function updateActiveNav(pageId) {
     const allNavBtns = document.querySelectorAll('.nav-btn, #mobileMenu button');
+    
     allNavBtns.forEach(btn => {
         const onclickVal = btn.getAttribute('onclick');
         btn.classList.remove('text-white', 'font-bold'); 
-        btn.classList.add('text-gray-400');
+        btn.classList.add('text-gray-400'); 
+        
         if (onclickVal && onclickVal.includes(pageId)) {
             btn.classList.remove('text-gray-400');
             btn.classList.add('text-white', 'font-bold');
@@ -25,12 +36,21 @@ function updateActiveNav(pageId) {
 }
 
 // ======================================================
-// 2. FIREBASE IMPORTS & CONFIG
+// 2. FIREBASE IMPORTS
 // ======================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, addDoc, deleteDoc, updateDoc, increment, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+    getFirestore, collection, doc, setDoc, addDoc,
+    deleteDoc, updateDoc, increment, onSnapshot, getDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+    getAuth, signInWithEmailAndPassword,
+    createUserWithEmailAndPassword, signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+// ======================================================
+// 3. FIREBASE CONFIG
+// ======================================================
 const firebaseConfig = {
     apiKey: "AIzaSyD4gnX77Hvu49WFwYl4HtJJOPk0SwRsj8s",
     authDomain: "kopi-jalanan.firebaseapp.com",
@@ -50,13 +70,14 @@ const auth = getAuth(app);
 let cart = [];
 let products = [];
 let currentUser = null;
-let isAdmin = false;
+let isAdmin = false; 
 let activeCategory = "all";
 let isProcessingOrder = false;
 let editingProductId = null;
 
 const menuItems = [
     { id: "americano", name: "Americano", price: 6.00, category: "coffee", imgUrl: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=200&auto=format&fit=crop", desc: "Bold & Robust" },
+    { id: "caramel-mac", name: "Caramel Macchiato", price: 8.00, category: "coffee", imgUrl: "https://images.unsplash.com/photo-1485808191679-5f8c7c8606f4?q=80&w=200&auto=format&fit=crop", desc: "Sweet & Creamy" },
     { id: "cucur", name: "Cucur Udang", price: 5.70, category: "dessert", imgUrl: "https://resepichenom.com/media/Cucur_Udang_Kuah_Kacang.jpg", desc: "Traditional crispy prawn fritters." }
 ];
 
@@ -64,22 +85,32 @@ const menuItems = [
 // 5. STARTUP LISTENERS
 // ======================================================
 document.addEventListener("DOMContentLoaded", () => {
+    // Firebase products
     onSnapshot(collection(db, "products"), (snap) => {
         const firebaseData = snap.docs.map(d => ({ ...d.data(), id: d.id }));
-        products = firebaseData.length > 0 ? firebaseData : menuItems;
+        if(firebaseData.length > 0) {
+            products = firebaseData;
+        } else {
+            products = menuItems;
+        }
         renderMenu();
         renderAdminTable();
     });
 
+    // Auth listener (Database Check Method)
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
-        isAdmin = false;
+        isAdmin = false; 
+
         if (user) {
             try {
+                // Check if this user exists in the 'admins' collection
                 const adminRef = doc(db, "admins", user.email);
                 const snap = await getDoc(adminRef);
-                if (snap.exists()) isAdmin = true;
-            } catch (e) { console.log(e); }
+                if (snap.exists()) {
+                    isAdmin = true;
+                }
+            } catch (e) { console.log("Admin check failed", e); }
         }
         updateNavUI(user);
     });
@@ -94,18 +125,31 @@ document.addEventListener("DOMContentLoaded", () => {
 // ======================================================
 function filterMenu(category) {
     activeCategory = category;
+    
     const btnAll = document.getElementById('btn-all');
     const btnCoffee = document.getElementById('btn-coffee');
     const btnDessert = document.getElementById('btn-dessert');
     const slider = document.getElementById('tabSlider');
 
     [btnAll, btnCoffee, btnDessert].forEach(b => {
-        if(b) { b.classList.remove('text-white'); b.classList.add('text-gray-500'); }
+        if(b) {
+            b.classList.remove('text-white');
+            b.classList.add('text-gray-500');
+        }
     });
 
-    if(category === 'all' && btnAll) { btnAll.classList.replace('text-gray-500', 'text-white'); if(slider) slider.style.transform = 'translateX(0%)'; } 
-    else if(category === 'coffee' && btnCoffee) { btnCoffee.classList.replace('text-gray-500', 'text-white'); if(slider) slider.style.transform = 'translateX(100%)'; } 
-    else if(category === 'dessert' && btnDessert) { btnDessert.classList.replace('text-gray-500', 'text-white'); if(slider) slider.style.transform = 'translateX(200%)'; }
+    if(category === 'all' && btnAll) {
+        btnAll.classList.replace('text-gray-500', 'text-white');
+        if(slider) slider.style.transform = 'translateX(0%)';
+    } 
+    else if(category === 'coffee' && btnCoffee) {
+        btnCoffee.classList.replace('text-gray-500', 'text-white');
+        if(slider) slider.style.transform = 'translateX(100%)';
+    } 
+    else if(category === 'dessert' && btnDessert) {
+        btnDessert.classList.replace('text-gray-500', 'text-white');
+        if(slider) slider.style.transform = 'translateX(200%)';
+    }
 
     renderMenu();
 }
@@ -117,7 +161,10 @@ function renderMenu() {
     grid.className = "flex flex-col gap-3 pb-20 mt-4 px-1"; 
 
     const dataSource = products.length ? products : menuItems;
-    const filteredData = activeCategory === 'all' ? dataSource : dataSource.filter(p => p.category === activeCategory);
+
+    const filteredData = activeCategory === 'all' 
+        ? dataSource 
+        : dataSource.filter(p => p.category === activeCategory);
 
     if (filteredData.length === 0) {
         grid.innerHTML = '<p class="text-gray-500 text-center w-full mt-10">No items found.</p>';
@@ -126,9 +173,12 @@ function renderMenu() {
 
     filteredData.forEach(item => {
         const imgUrl = item.imgUrl || "https://placehold.co/400x300/2c2c2c/FFAE00?text=Kopi+Jalanan";
+        
         const card = document.createElement('div');
         card.className = "flex gap-4 p-3 bg-zinc-900 border border-zinc-800 rounded-xl items-center shadow-md hover:border-street-yellow transition cursor-pointer";
-        card.onclick = (e) => { if(!e.target.closest('button')) viewDetail(item.id); };
+        card.onclick = (e) => {
+            if(!e.target.closest('button')) viewDetail(item.id);
+        };
 
         card.innerHTML = `
             <div class="w-20 h-20 md:w-24 md:h-24 flex-shrink-0 bg-black rounded-lg overflow-hidden">
@@ -140,7 +190,9 @@ function renderMenu() {
                 <div class="text-street-yellow font-bold mt-1 text-md">RM ${item.price.toFixed(2)}</div>
             </div>
             <div class="flex-shrink-0">
-                <button onclick="viewDetail('${item.id}')" class="w-9 h-9 rounded-full bg-zinc-800 border border-zinc-700 text-white flex items-center justify-center hover:bg-street-yellow hover:text-black hover:border-street-yellow transition shadow-lg"><i class="fas fa-plus"></i></button>
+                <button onclick="viewDetail('${item.id}')" class="w-9 h-9 rounded-full bg-zinc-800 border border-zinc-700 text-white flex items-center justify-center hover:bg-street-yellow hover:text-black hover:border-street-yellow transition shadow-lg">
+                    <i class="fas fa-plus"></i>
+                </button>
             </div>
         `;
         grid.appendChild(card);
@@ -150,6 +202,7 @@ function renderMenu() {
 // ======================================================
 // 7. PRODUCT DETAIL & CUSTOMIZATION
 // ======================================================
+
 function viewDetail(id) {
     const prod = products.find(p => p.id === id) || menuItems.find(p => p.id === id);
     if (!prod) return;
@@ -170,12 +223,13 @@ function viewDetail(id) {
             <div class="mb-5"><label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Ice</label><div class="flex gap-4">${createCircleOption('ice', '30%', '30%')}${createCircleOption('ice', '50%', '50%', true)}${createCircleOption('ice', '70%', '70%')}</div></div>
         `;
     } else if (prod.category === 'dessert') {
-        container.innerHTML = ``; // No options for dessert
+        container.innerHTML = ``; 
     }
 
     const addBtn = document.getElementById('detailAddBtn');
     addBtn.innerText = "ADD TO ORDER"; 
     addBtn.onclick = () => addCustomToCart(prod.id);
+
     showPage('detailPage');
 }
 
@@ -192,6 +246,7 @@ function addCustomToCart(id) {
 
         if(size === 'L') finalPrice += 2.00;
         if(size === 'M') finalPrice += 1.00;
+
         details.push(`${mood} | Size ${size}`);
         details.push(`Sugar ${sugar} | Ice ${ice}`);
     } 
@@ -228,7 +283,7 @@ window.selectOption = function(group, el) {
 };
 
 // ======================================================
-// 8. CART & PAYMENT LOGIC
+// 8. CART & CHECKOUT
 // ======================================================
 function updateCart() {
     document.getElementById('cartCount').textContent = cart.length;
@@ -240,9 +295,16 @@ function updateCart() {
         total += item.finalPrice;
         list.innerHTML += `
             <div class="flex justify-between items-start border-b border-zinc-800 pb-3 mb-3">
-                <div><div class="text-white font-bold text-sm">${item.name}</div><div class="text-xs text-gray-500 mt-1">${item.customization}</div></div>
-                <div class="text-right"><div class="text-street-yellow font-bold text-sm">RM ${item.finalPrice.toFixed(2)}</div><button onclick="removeFromCart(${index})" class="text-[10px] text-red-500 hover:text-red-400 mt-1 uppercase tracking-wider">Remove</button></div>
-            </div>`;
+                <div>
+                    <div class="text-white font-bold text-sm">${item.name}</div>
+                    <div class="text-xs text-gray-500 mt-1">${item.customization}</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-street-yellow font-bold text-sm">RM ${item.finalPrice.toFixed(2)}</div>
+                    <button onclick="removeFromCart(${index})" class="text-[10px] text-red-500 hover:text-red-400 mt-1 uppercase tracking-wider">Remove</button>
+                </div>
+            </div>
+        `;
     });
     document.getElementById('checkoutTotal').textContent = `RM ${total.toFixed(2)}`;
 }
@@ -272,7 +334,16 @@ async function submitCheckout(event) {
         const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
 
         await addDoc(collection(db, "orders"), {
-            userId: currentUser.uid, email: currentUser.email, customerName: custName, customerPhone: custPhone, deliveryAddress: custAddress, paymentMethod: paymentMethod, items: cart, total: totalText, createdAt: new Date().toISOString(), status: "Pending"
+            userId: currentUser.uid,
+            email: currentUser.email,
+            customerName: custName,
+            customerPhone: custPhone,
+            deliveryAddress: custAddress,
+            paymentMethod: paymentMethod,
+            items: cart,
+            total: totalText,
+            createdAt: new Date().toISOString(),
+            status: "Pending"
         });
         alert(`Order confirmed (${paymentMethod}) ☕`);
         cart = []; updateCart(); showPage('homePage');
@@ -292,6 +363,7 @@ function updateNavUI(user) {
     if (user) {
         if(authBtn) { authBtn.innerText = "Logout"; authBtn.classList.replace('bg-zinc-800', 'bg-red-600'); }
         if(mobileAuthBtn) { mobileAuthBtn.innerText = "Logout"; mobileAuthBtn.classList.add('text-red-500'); }
+
         if (isAdmin) {
             if(adminBtn) adminBtn.classList.remove('hidden');
             if(mobileAdminBtn) mobileAdminBtn.classList.remove('hidden');
@@ -312,7 +384,7 @@ function handleLogin(e) { e.preventDefault(); signInWithEmailAndPassword(auth, d
 function handleSignUp(e) { e.preventDefault(); createUserWithEmailAndPassword(auth, document.getElementById('signupEmail').value, document.getElementById('signupPass').value).then(() => { alert("Account created!"); showPage('homePage'); }).catch(err => alert(err.message)); }
 
 // ======================================================
-// 11. ADMIN CRUD
+// 11. ADMIN CRUD (SECURED)
 // ======================================================
 async function addProduct(event) {
     event.preventDefault();
@@ -337,6 +409,7 @@ async function addProduct(event) {
 }
 
 function editProduct(id) {
+    if (!currentUser || !isAdmin) return alert("Admins Only!");
     const p = products.find(prod => prod.id === id);
     if(!p) return;
     document.getElementById('prodName').value = p.name; document.getElementById('prodPrice').value = p.price; document.getElementById('prodStock').value = p.stock;

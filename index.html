@@ -36,9 +36,10 @@
                 <span id="cartCount" class="absolute -top-1 -right-1 bg-street-yellow text-black text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">0</span>
             </button>
 
-            <button id="navAdminBtn" onclick="showPage('adminPage')" class="hidden md:block hidden text-red-500 text-[10px] uppercase border border-red-900 px-2 py-1 rounded">
+            <button id="navAdminBtn" onclick="showPage('adminPage')" class="hidden text-red-500 text-[10px] uppercase border border-red-900 px-2 py-1 rounded">
                 Admin
             </button>
+
             <button id="navAuthBtn" onclick="handleAuthClick()" class="hidden md:block bg-zinc-800 text-white px-3 py-1.5 text-[10px] uppercase font-bold tracking-widest hover:bg-zinc-700 transition rounded-sm">
                 Login
             </button>
@@ -52,7 +53,11 @@
             <button onclick="mobileNavClick('homePage')" class="w-full text-left py-4 px-4 text-sm uppercase tracking-widest text-gray-300 hover:text-street-yellow hover:bg-black/50 border-b border-zinc-800 transition">Home</button>
             <button onclick="mobileNavClick('menuPage')" class="w-full text-left py-4 px-4 text-sm uppercase tracking-widest text-gray-300 hover:text-street-yellow hover:bg-black/50 border-b border-zinc-800 transition">Menu</button>
             <button onclick="mobileNavClick('aboutPage')" class="w-full text-left py-4 px-4 text-sm uppercase tracking-widest text-gray-300 hover:text-street-yellow hover:bg-black/50 border-b border-zinc-800 transition">About</button>
-            <button id="mobileAdminBtn" onclick="mobileNavClick('adminPage')" class="hidden w-full text-left py-4 px-4 text-sm uppercase tracking-widest text-red-500 font-bold hover:bg-black/50 border-b border-zinc-800 transition">Admin Panel</button>
+            
+            <button id="mobileAdminBtn" onclick="mobileNavClick('adminPage')" class="hidden w-full text-left py-4 px-4 text-sm uppercase tracking-widest text-red-500 font-bold hover:bg-black/50 border-b border-zinc-800 transition">
+                Admin Panel
+            </button>
+
             <button id="mobileAuthBtn" onclick="handleAuthClick(); toggleMobileMenu()" class="w-full text-left py-4 px-4 text-sm uppercase tracking-widest text-street-yellow font-bold hover:bg-black/50 transition">Login</button>
         </div>
     </nav>
@@ -66,7 +71,7 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 items-center">
                 <div class="md:col-span-2 space-y-4 md:space-y-6 text-gray-400">
-                    <p class="text-gray-400 mb-4"><strong>Kopi Jalanan</strong> was born from a simple idea: that premium coffee shouldn't come with a premium price tag.</p>
+                    <p class="text-gray-400 mb-4"><strong>Kopi Jalanan</strong> was born from a simple idea: that premium coffee shouldn't come with a premium price tag. We use a robust blend of 100% Arabica and Robusta beans.</p>
                     <button onclick="showPage('menuPage')" class="w-full sm:w-auto bg-zinc-800 text-white font-bold py-3 px-6 mt-4 uppercase tracking-widest hover:bg-street-yellow hover:text-black transition">See Our Brews</button>
                 </div>
                 <div class="hidden md:block p-8 border border-zinc-800 bg-zinc-900 rounded-lg shadow-xl text-center">
@@ -120,8 +125,7 @@
                 </div>
             </div>
             <div id="menuGrid" class="flex flex-col gap-4 pb-20 mt-6">
-                <p class="text-center text-gray-500 mt-10">Loading menu...</p>
-            </div>
+                </div>
         </section>
 
         <section id="detailPage" class="page-section hidden px-4 sm:px-6 py-12 max-w-6xl mx-auto">

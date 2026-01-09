@@ -5,7 +5,6 @@ const pages = document.querySelectorAll('.page-section');
 
 function showPage(pageId) {
     // --- SECURITY GUARD ---
-    // Prevent access to Admin Page if not logged in as Admin
     if (pageId === 'adminPage' && !isAdmin) {
         alert("Access Denied: Admins Only.");
         showPage('homePage'); 
@@ -25,9 +24,11 @@ function updateActiveNav(pageId) {
     
     allNavBtns.forEach(btn => {
         const onclickVal = btn.getAttribute('onclick');
+        // Reset Style
         btn.classList.remove('text-white', 'font-bold'); 
         btn.classList.add('text-gray-400'); 
         
+        // Set Active Style
         if (onclickVal && onclickVal.includes(pageId)) {
             btn.classList.remove('text-gray-400');
             btn.classList.add('text-white', 'font-bold');
@@ -97,14 +98,14 @@ document.addEventListener("DOMContentLoaded", () => {
         renderAdminTable();
     });
 
-    // Auth listener (Database Check Method)
+    // Auth listener
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
         isAdmin = false; 
 
         if (user) {
             try {
-                // Check if this user exists in the 'admins' collection
+                // Database Check for Admin
                 const adminRef = doc(db, "admins", user.email);
                 const snap = await getDoc(adminRef);
                 if (snap.exists()) {
@@ -223,7 +224,7 @@ function viewDetail(id) {
             <div class="mb-5"><label class="block text-gray-400 text-xs font-bold mb-2 uppercase">Ice</label><div class="flex gap-4">${createCircleOption('ice', '30%', '30%')}${createCircleOption('ice', '50%', '50%', true)}${createCircleOption('ice', '70%', '70%')}</div></div>
         `;
     } else if (prod.category === 'dessert') {
-        container.innerHTML = ``; 
+        container.innerHTML = ``; // No Add-ons for desserts
     }
 
     const addBtn = document.getElementById('detailAddBtn');
@@ -360,22 +361,22 @@ function updateNavUI(user) {
     const mobileAdminBtn = document.getElementById('mobileAdminBtn');
     const mobileAuthBtn = document.getElementById('mobileAuthBtn');
 
+    // Default: Hide Admin
+    if (adminBtn) adminBtn.classList.add('hidden');
+    if (mobileAdminBtn) mobileAdminBtn.classList.add('hidden');
+
     if (user) {
         if(authBtn) { authBtn.innerText = "Logout"; authBtn.classList.replace('bg-zinc-800', 'bg-red-600'); }
         if(mobileAuthBtn) { mobileAuthBtn.innerText = "Logout"; mobileAuthBtn.classList.add('text-red-500'); }
 
+        // Only show if DB check passed
         if (isAdmin) {
             if(adminBtn) adminBtn.classList.remove('hidden');
             if(mobileAdminBtn) mobileAdminBtn.classList.remove('hidden');
-        } else {
-            if(adminBtn) adminBtn.classList.add('hidden');
-            if(mobileAdminBtn) mobileAdminBtn.classList.add('hidden');
         }
     } else {
         if(authBtn) { authBtn.innerText = "Login"; authBtn.classList.replace('bg-red-600', 'bg-zinc-800'); }
         if(mobileAuthBtn) { mobileAuthBtn.innerText = "Login"; mobileAuthBtn.classList.remove('text-red-500'); }
-        if(adminBtn) adminBtn.classList.add('hidden');
-        if(mobileAdminBtn) mobileAdminBtn.classList.add('hidden');
     }
 }
 
@@ -384,7 +385,7 @@ function handleLogin(e) { e.preventDefault(); signInWithEmailAndPassword(auth, d
 function handleSignUp(e) { e.preventDefault(); createUserWithEmailAndPassword(auth, document.getElementById('signupEmail').value, document.getElementById('signupPass').value).then(() => { alert("Account created!"); showPage('homePage'); }).catch(err => alert(err.message)); }
 
 // ======================================================
-// 11. ADMIN CRUD (SECURED)
+// 11. ADMIN CRUD
 // ======================================================
 async function addProduct(event) {
     event.preventDefault();
